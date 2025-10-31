@@ -48,6 +48,7 @@
     <label><input type="checkbox" id="chkAmbiental" checked> Ambiental</label><br>
     <label><input type="checkbox" id="chkSocial" checked> Social</label><br>
     <label><input type="checkbox" id="chkEconomica" checked> Económica</label>
+    <label><input type="checkbox" id="chkOtra" checked> Otra</label>
   </div>
 
   <div class="legend" id="legend">
@@ -55,6 +56,7 @@
     <div class="row"><span class="dot ambiental"></span>Ambiental (<span id="countAmbiental">0</span>)</div>
     <div class="row"><span class="dot social"></span>Social (<span id="countSocial">0</span>)</div>
     <div class="row"><span class="dot economica"></span>Económica (<span id="countEconomica">0</span>)</div>
+    <div class="row"><span class="dot otra" style="background:#9b59b6"></span>Otra (<span id="countOtra">0</span>)</div>
   </div>
 
   <script>
@@ -74,20 +76,22 @@
       fetch('entidades.geojson')
         .then(res => res.json())
         .then(data => {
-          const categorias = ['Ambiental', 'Social', 'Económica'];
-          const iconos = {
-            'Ambiental': 'park-15',
-            'Social': 'town-hall-15',
-            'Económica': 'bank-15'
-          };
-          const colores = {
-            'Ambiental': '#2ecc71',
-            'Social': '#3498db',
-            'Económica': '#f1c40f'
-          };
+         const categorias = ['Ambiental', 'Social', 'Económica', 'Otra'];
+const iconos = {
+  'Ambiental': 'park-15',
+  'Social': 'town-hall-15',
+  'Económica': 'bank-15',
+  'Otra': 'marker-15'
+};
+const colores = {
+  'Ambiental': '#2ecc71',
+  'Social': '#3498db',
+  'Económica': '#f1c40f',
+  'Otra': '#9b59b6' // morado
+};
 
           // Contadores
-          const counts = { 'Ambiental': 0, 'Social': 0, 'Económica': 0 };
+         const counts = { 'Ambiental': 0, 'Social': 0, 'Económica': 0, 'Otra': 0 };
 
           // Contar por categoría
           data.features.forEach(f => {
@@ -148,7 +152,10 @@
           });
           document.getElementById('chkEconomica').addEventListener('change', (e) => {
             map.setLayoutProperty('layer-Económica', 'visibility', e.target.checked ? 'visible' : 'none');
-          });
+            document.getElementById('chkOtra').addEventListener('change', (e) => {
+  map.setLayoutProperty('layer-Otra', 'visibility', e.target.checked ? 'visible' : 'none');
+});
+         });
         });
     });
   </script>
