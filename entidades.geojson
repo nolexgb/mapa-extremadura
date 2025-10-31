@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.338,
+          39.472
+        ]
+      },
+      "properties": {
+        "nombre_entidad": "Ejemplo Social",
+        "pagina_contacto": "https://ejemplo.org",
+        "tematica": "Inclusi\u00f3n",
+        "ambito_geografico": "Regional",
+        "localidad": "C\u00e1ceres",
+        "telefono": "600000001",
+        "correo": "contacto@ejemplo.org",
+        "categoria": "Social"
+      }
+    }
+  ]
+}

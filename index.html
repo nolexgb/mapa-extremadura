@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa de Entidades - Extremadura</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.1/mapbox-gl.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <div class="filters">
+    <label><input type="checkbox" id="chkSocial" checked> Social</label>
+    <label><input type="checkbox" id="chkAmbiental" checked> Ambiental</label>
+    <label><input type="checkbox" id="chkEconomica" checked> Económica</label>
+    <label><input type="checkbox" id="chkOtra" checked> Otra</label>
+  </div>
+
+  <div class="legend">
+    <div class="row"><span class="dot social"></span>Social (<span id="countSocial">0</span>)</div>
+    <div class="row"><span class="dot ambiental"></span>Ambiental (<span id="countAmbiental">0</span>)</div>
+    <div class="row"><span class="dot economica"></span>Económica (<span id="countEconomica">0</span>)</div>
+    <div class="row"><span class="dot otra"></span>Otra (<span id="countOtra">0</span>)</div>
+  </div>
+
+  <script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoibW1pbGFjIiwiYSI6ImNpeWhkNXZsMDA1ZDgzMm4wdWRzdzRleWcifQ.crLVL3iFWYSbE5zrlkIA7w';
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: [-6.338, 39.472],
+    zoom: 7
+  });
+
+  const colors = {
+    'Social': '#3498db',
+    'Ambiental': '#2ecc71',
+    'Económica': '#f1c40f',
+    'Otra': '#9b59b6'
+  };
+
+  const counts = { 'Social': 0, 'Ambiental': 0, 'Económica': 0, 'Otra': 0 };
+
+  map.on('load', () => {
+    fetch('https://nolexgb.github.io/mapa-extremadura/entidades.geojson')
+      .then(response => response.json())
+      .then(data => {
+        data.features.forEach(f => {
+          const cat = f.properties.categoria;
+          if (counts[cat] !== undefined) counts[cat]++;
+        });
+
+        document.getElementById('countSocial').textContent = counts['Social'];
+        document.getElementById('countAmbiental').textContent = counts['Ambiental'];
+        document.getElementById('countEconomica').textContent = counts['Económica'];
+        document.getElementById('countOtra').textContent = counts['Otra'];
+
+        Object.keys(colors).forEach(categoria => {
+          map.addSource(`source-${categoria}`, {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: data.features.filter(f => f.properties.categoria === categoria)
+            }
+          });
+
+          map.addLayer({
+            id: `layer-${categoria}`,
+            type: 'circle',
+            source: `source-${categoria}`,
+            paint: {
+              'circle-radius': 6,
+              'circle-color': colors[categoria],
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#fff'
+            }
+          });
+
+          map.on('click', `layer-${categoria}`, (e) => {
+            const p = e.features[0].properties;
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <strong>${p.nombre_entidad}</strong><br>
+                <a href="${p.pagina_contacto}" target="_blank">Página de contacto</a><br>
+                <b>Temática:</b> ${p.tematica}<br>
+                <b>Ámbito:</b> ${p.ambito_geografico}<br>
+                <b>Localidad:</b> ${p.localidad}<br>
+                <b>Teléfono:</b> ${p.telefono}<br>
+                <b>Correo:</b> ${p.correo}
+              `)
+              .addTo(map);
+          });
+        });
+      });
+  });
+
+  document.getElementById('chkSocial').addEventListener('change', (e) => {
+    map.setLayoutProperty('layer-Social', 'visibility', e.target.checked ? 'visible' : 'none');
+  });
+  document.getElementById('chkAmbiental').addEventListener('change', (e) => {
+    map.setLayoutProperty('layer-Ambiental', 'visibility', e.target.checked ? 'visible' : 'none');
+  });
+  document.getElementById('chkEconomica').addEventListener('change', (e) => {
+    map.setLayoutProperty('layer-Económica', 'visibility', e.target.checked ? 'visible' : 'none');
+  });
+  document.getElementById('chkOtra').addEventListener('change', (e) => {
+    map.setLayoutProperty('layer-Otra', 'visibility', e.target.checked ? 'visible' : 'none');
+  });
+  </script>
+</body>
+</html>
