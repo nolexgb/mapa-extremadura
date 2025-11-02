@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <img src="logo_congdex.jpeg" alt="CONGDEX" class="logo" onerror="this.style.display='none'"/>
+      <div class="titles">
+        <div class="title">MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</div>
+        <div class="subtitle">Con el apoyo de la Diputación Provincial de Cáceres</div>
+      </div>
+      <a href="https://congdextremadura.org/" target="_blank" class="site-link">https://congdextremadura.org/</a>
+    </div>
+  </div>
+  <div id="map"></div>
+  <div id="alert" class="alert"></div>
+  <div class="searchbox">
+    <input id="searchInput" type="text" placeholder="Buscar entidad..." autocomplete="off"/>
+    <ul id="suggestions" class="suggestions"></ul>
+  </div>
+  <div class="filters">
+    <button class="btn-cat btn-social active" data-layer="layer-Social"><span class="dot"></span>Social</button>
+    <button class="btn-cat btn-ambiental active" data-layer="layer-Ambiental"><span class="dot"></span>Ambiental</button>
+    <button class="btn-cat btn-economica active" data-layer="layer-Económica"><span class="dot"></span>Económica</button>
+    <button class="btn-cat btn-otra active" data-layer="layer-Otra"><span class="dot"></span>Otra</button>
+  </div>
+  <script>
+    mapboxgl.accessToken = "pk.eyJ1IjoibW1pbGFjIiwiYSI6ImNpeWhkNXZsMDA1ZDgzMm4wdWRzdzRleWcifQ.crLVL3iFWYSbE5zrlkIA7w";
+    const alertBox = document.getElementById('alert');
+    function showAlert(msg) { alertBox.textContent = msg; alertBox.style.display = 'block'; setTimeout(()=>alertBox.style.display='none', 6000); }
+    const map = new mapboxgl.Map({ container: 'map', style: 'mapbox://styles/mapbox/streets-v12', center: [-6.338, 39.472], zoom: 7 });
+    map.addControl(new mapboxgl.NavigationControl());
+    const categorias = ['Social','Ambiental','Económica','Otra'];
+    const iconos = { 'Social':'icono_social.png','Ambiental':'icono_ambiental.png','Económica':'icono_economica.png','Otra':'icono_otra.png' };
+    map.on('load', async () => {
+      try {
+        const res = await fetch('entidades.geojson', { cache:'no-store' });
+        if (!res.ok) throw new Error('No se pudo cargar entidades.geojson');
+        const data = await res.json();
+        if (!data || !data.features) throw new Error('El archivo entidades.geojson está vacío o corrupto');
+        // Cargar iconos
+        await Promise.all(categorias.map(cat => new Promise(resolve => {
+          map.loadImage(iconos[cat], (err, img) => {
+            if (err || !img) { console.warn('Fallo al cargar icono de', cat, iconos[cat]); return resolve(); }
+            if (!map.hasImage(cat)) map.addImage(cat, img);
+            resolve();
+          });
+        })));
+        // Capas por categoría
+        categorias.forEach(cat => {
+          const feats = data.features.filter(f => f.properties && f.properties.categoria === cat);
+          map.addSource(cat, { type:'geojson', data: { type:'FeatureCollection', features: feats } });
+          map.addLayer({ id:`layer-${cat}`, type:'symbol', source:cat, layout: { 'icon-image':cat, 'icon-size':0.9, 'icon-allow-overlap':true, 'visibility':'visible' } });
+          map.on('click', `layer-${cat}`, (e) => {
+            const p = e.features[0].properties;
+            const html = `
+              <strong>${p.nombre_entidad || ''}</strong><br>
+              <a href="${p.pagina_contacto || '#'}" target="_blank">Web</a><br>
+              <b>Temática:</b> ${p.tematica || ''}<br>
+              <b>Ámbito:</b> ${p.ambito_geografico || ''}<br>
+              <b>Localidad:</b> ${p.localidad || ''}<br>
+              <b>Teléfono:</b> ${p.telefono || ''}<br>
+              <b>Correo:</b> ${p.correo || ''}`;
+            if (window.currentPopup) window.currentPopup.remove();
+            window.currentPopup = new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
+            map.flyTo({ center: e.features[0].geometry.coordinates, zoom: 11 });
+          });
+        });
+        // Vista inicial con todos los puntos
+        const bbox = turf.bbox(data);
+        if (Array.isArray(bbox) && bbox.length === 4) map.fitBounds(bbox, { padding: 60 });
+        // Botones categorías
+        document.querySelectorAll('.btn-cat').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const layer = btn.dataset.layer;
+            const visible = map.getLayoutProperty(layer, 'visibility') !== 'none';
+            map.setLayoutProperty(layer, 'visibility', visible ? 'none' : 'visible');
+            btn.classList.toggle('active', !visible);
+          });
+        });
+        // Iniciar buscador
+        if (window.initBuscador) window.initBuscador(map, data);
+      } catch (err) {
+        console.error(err);
+        showAlert('⚠️ ' + (err && err.message ? err.message : 'Error desconocido cargando datos'));
+      }
+    });
+  </script>
+  <script src="buscador.js"></script>
+</body>
+</html>
