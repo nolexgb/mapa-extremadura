@@ -12,7 +12,7 @@
 <body>
   <header class="header">
     <img src="logo_congdex.jpeg" alt="Logo CONGDEX" class="logo">
-    <h1><span class="verde">MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</span></h1>
+    <h1>MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</h1>
     <p>Con el apoyo de la Diputación Provincial de Cáceres</p>
     <a href="https://congdextremadura.org/" class="web" target="_blank">https://congdextremadura.org/</a>
   </header>
@@ -35,89 +35,88 @@
     const map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [-6.4, 39.3],
-      zoom: 7
+      center: [-6.35, 39.3],
+      zoom: 7.2,
+      minZoom: 6,
+      maxZoom: 15
     });
 
-    const categorias = ['Ambiental', 'Social', 'Economica', 'Otra'];
-    const colores = {
-      'Ambiental': '#2ecc71',
-      'Social': '#3498db',
-      'Economica': '#f1c40f',
-      'Otra': '#9b59b6'
+    // Filtro visual: Extremadura resaltada, resto atenuado
+    map.on('load', () => {
+      map.setPaintProperty('background', 'background-color', '#f7f7f7');
+
+      // Añadimos una capa semitransparente gris sobre todo el mapa
+      map.addLayer({
+        id: 'atenuar-fondo',
+        type: 'background',
+        paint: { 'background-color': '#dcdcdc', 'background-opacity': 0.35 },
+        beforeId: 'waterway-label'
+      });
+
+      // Cargar puntos
+      cargarEntidades();
+    });
+
+    const iconos = {
+      'Social': 'icono_social.png',
+      'Ambiental': 'icono_ambiental.png',
+      'Economica': 'icono_economica.png',
+      'Otra': 'icono_otra.png'
     };
 
-    map.on('load', () => {
+    let markers = [];
+
+    function cargarEntidades() {
       fetch('entidades.geojson')
         .then(res => res.json())
         .then(data => {
-          window.allData = data; // disponible para buscador.js
+          window.allData = data;
+          const bounds = new mapboxgl.LngLatBounds();
 
           data.features.forEach(f => {
-            const cat = f.properties.categoria;
-            const icono = `icono_${cat.toLowerCase()}.png`;
+            const el = document.createElement('div');
+            el.className = 'marker';
+            el.style.backgroundImage = `url(${iconos[f.properties.categoria]})`;
+            el.style.width = '32px';
+            el.style.height = '32px';
+            el.style.backgroundSize = 'cover';
 
-            if (!map.getSource(cat)) {
-              map.addSource(cat, {
-                type: 'geojson',
-                data: {
-                  type: 'FeatureCollection',
-                  features: data.features.filter(feat => feat.properties.categoria === cat)
-                }
-              });
+            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+              <div style="display:flex;align-items:center;gap:8px;">
+                <img src="${iconos[f.properties.categoria]}" width="24" height="24">
+                <h3 style="margin:0;">${f.properties.nombre_entidad}</h3>
+              </div>
+              <p><b>Temática:</b> ${f.properties.tematica}</p>
+              <p><b>Ámbito:</b> ${f.properties.ambito_geografico}</p>
+              <p><b>Localidad:</b> ${f.properties.localidad}</p>
+              <p><b>Teléfono:</b> ${f.properties.telefono}</p>
+              <p><b>Correo:</b> <a href="mailto:${f.properties.correo}">${f.properties.correo}</a></p>
+              <p><a href="${f.properties.pagina_contacto}" target="_blank">Sitio web</a></p>
+            `);
 
-              map.addLayer({
-                id: `layer-${cat}`,
-                type: 'symbol',
-                source: cat,
-                layout: {
-                  'icon-image': icono,
-                  'icon-size': 0.8,
-                  'icon-allow-overlap': true
-                }
-              });
-            }
-          });
-
-          // Muestra todas las capas al iniciar
-          map.once('idle', () => {
-            categorias.forEach(cat => {
-              map.setLayoutProperty(`layer-${cat}`, 'visibility', 'visible');
-            });
-          });
-
-          // Popups
-          map.on('click', e => {
-            const features = map.queryRenderedFeatures(e.point);
-            if (!features.length) return;
-            const f = features[0];
-            const p = f.properties;
-            const iconPath = `icono_${p.categoria.toLowerCase()}.png`;
-
-            new mapboxgl.Popup()
+            const marker = new mapboxgl.Marker(el)
               .setLngLat(f.geometry.coordinates)
-              .setHTML(`
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <img src="${iconPath}" width="28" height="28" alt="${p.categoria}">
-                  <h3 style="margin:0;">${p.nombre_entidad}</h3>
-                </div>
-                <p><b>Temática:</b> ${p.tematica}</p>
-                <p><b>Ámbito:</b> ${p.ambito_geografico}</p>
-                <p><b>Localidad:</b> ${p.localidad}</p>
-                <p><b>Teléfono:</b> ${p.telefono}</p>
-                <p><b>Correo:</b> <a href="mailto:${p.correo}">${p.correo}</a></p>
-                <p><a href="${p.pagina_contacto}" target="_blank">Web</a></p>
-              `)
+              .setPopup(popup)
               .addTo(map);
-          });
-        });
-    });
 
-    // Botones de categorías
+            marker.categoria = f.properties.categoria;
+            markers.push(marker);
+            bounds.extend(f.geometry.coordinates);
+          });
+
+          // Centrar automáticamente en Extremadura y mostrar todos los puntos
+          map.fitBounds(bounds, { padding: 60 });
+        });
+    }
+
+    // Filtro de botones
     function toggleLayer(cat) {
-      const id = `layer-${cat}`;
-      const visibility = map.getLayoutProperty(id, 'visibility');
-      map.setLayoutProperty(id, 'visibility', visibility === 'visible' ? 'none' : 'visible');
+      markers.forEach(m => {
+        if (m.categoria === cat) {
+          const visible = m._element.style.display !== 'none';
+          m._element.style.display = visible ? 'none' : 'block';
+        }
+      });
     }
 
     document.getElementById('btnSocial').addEventListener('click', () => toggleLayer('Social'));
@@ -129,4 +128,3 @@
   <script src="buscador.js"></script>
 </body>
 </html>
-
