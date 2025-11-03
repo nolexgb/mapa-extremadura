@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mapeo de Redes y Colectivos de Extremadura</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+  <link
+    href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+    rel="stylesheet"
+  />
 </head>
-
 <body>
   <header class="header">
-    <img src="logo_congdex.jpeg" alt="Logo CONGDEX" class="logo">
+    <img src="logo_congdex.jpeg" alt="Logo CONGDEX" class="logo" />
     <h1>MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</h1>
     <p>Con el apoyo de la Diputación Provincial de Cáceres</p>
-    <a href="https://congdextremadura.org/" class="web" target="_blank">https://congdextremadura.org/</a>
+    <a
+      href="https://congdextremadura.org/"
+      class="web"
+      target="_blank"
+      >https://congdextremadura.org/</a
+    >
   </header>
 
   <div id="map"></div>
 
   <div class="search-container">
-    <input type="text" id="searchBox" placeholder="Buscar entidad...">
+    <input type="text" id="searchBox" placeholder="Buscar entidad..." />
   </div>
 
   <div class="category-buttons">
@@ -31,59 +38,48 @@
   </div>
 
   <script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoibm9sZXhnYiIsImEiOiJjbTJocGhhd2owN2Z1MnBvM3h0Nml5bm1tIn0.3c5TPlZzqKQUZ8EJk2c-tg';
+    mapboxgl.accessToken =
+      "pk.eyJ1Ijoibm9sZXhnYiIsImEiOiJjbTJocGhhd2owN2Z1MnBvM3h0Nml5bm1tIn0.3c5TPlZzqKQUZ8EJk2c-tg";
+
     const map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/light-v11',
+      container: "map",
+      style: "mapbox://styles/mapbox/light-v11",
       center: [-6.35, 39.3],
       zoom: 7.2,
       minZoom: 6,
-      maxZoom: 15
-    });
-
-    // Filtro visual: Extremadura resaltada, resto atenuado
-    map.on('load', () => {
-      map.setPaintProperty('background', 'background-color', '#f7f7f7');
-
-      // Añadimos una capa semitransparente gris sobre todo el mapa
-      map.addLayer({
-        id: 'atenuar-fondo',
-        type: 'background',
-        paint: { 'background-color': '#dcdcdc', 'background-opacity': 0.35 },
-        beforeId: 'waterway-label'
-      });
-
-      // Cargar puntos
-      cargarEntidades();
+      maxZoom: 15,
     });
 
     const iconos = {
-      'Social': 'icono_social.png',
-      'Ambiental': 'icono_ambiental.png',
-      'Economica': 'icono_economica.png',
-      'Otra': 'icono_otra.png'
+      Social: "icono_social.png",
+      Ambiental: "icono_ambiental.png",
+      Economica: "icono_economica.png",
+      Otra: "icono_otra.png",
     };
 
     let markers = [];
 
-    function cargarEntidades() {
-      fetch('entidades.geojson')
-        .then(res => res.json())
-        .then(data => {
+    map.on("load", () => {
+      map.setPaintProperty("background", "background-color", "#f9f9f9");
+
+      fetch("entidades.geojson")
+        .then((res) => res.json())
+        .then((data) => {
           window.allData = data;
           const bounds = new mapboxgl.LngLatBounds();
 
-          data.features.forEach(f => {
-            const el = document.createElement('div');
-            el.className = 'marker';
-            el.style.backgroundImage = `url(${iconos[f.properties.categoria]})`;
-            el.style.width = '32px';
-            el.style.height = '32px';
-            el.style.backgroundSize = 'cover';
+          data.features.forEach((f) => {
+            const cat = f.properties.categoria;
+            const el = document.createElement("div");
+            el.className = "marker";
+            el.style.backgroundImage = `url(${iconos[cat]})`;
+            el.style.width = "32px";
+            el.style.height = "32px";
+            el.style.backgroundSize = "cover";
 
             const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
               <div style="display:flex;align-items:center;gap:8px;">
-                <img src="${iconos[f.properties.categoria]}" width="24" height="24">
+                <img src="${iconos[cat]}" width="24" height="24" alt="${cat}">
                 <h3 style="margin:0;">${f.properties.nombre_entidad}</h3>
               </div>
               <p><b>Temática:</b> ${f.properties.tematica}</p>
@@ -99,30 +95,36 @@
               .setPopup(popup)
               .addTo(map);
 
-            marker.categoria = f.properties.categoria;
+            marker.categoria = cat;
             markers.push(marker);
             bounds.extend(f.geometry.coordinates);
           });
 
-          // Centrar automáticamente en Extremadura y mostrar todos los puntos
           map.fitBounds(bounds, { padding: 60 });
         });
-    }
+    });
 
-    // Filtro de botones
     function toggleLayer(cat) {
-      markers.forEach(m => {
+      markers.forEach((m) => {
         if (m.categoria === cat) {
-          const visible = m._element.style.display !== 'none';
-          m._element.style.display = visible ? 'none' : 'block';
+          const visible = m._element.style.display !== "none";
+          m._element.style.display = visible ? "none" : "block";
         }
       });
     }
 
-    document.getElementById('btnSocial').addEventListener('click', () => toggleLayer('Social'));
-    document.getElementById('btnAmbiental').addEventListener('click', () => toggleLayer('Ambiental'));
-    document.getElementById('btnEconomica').addEventListener('click', () => toggleLayer('Economica'));
-    document.getElementById('btnOtra').addEventListener('click', () => toggleLayer('Otra'));
+    document
+      .getElementById("btnSocial")
+      .addEventListener("click", () => toggleLayer("Social"));
+    document
+      .getElementById("btnAmbiental")
+      .addEventListener("click", () => toggleLayer("Ambiental"));
+    document
+      .getElementById("btnEconomica")
+      .addEventListener("click", () => toggleLayer("Economica"));
+    document
+      .getElementById("btnOtra")
+      .addEventListener("click", () => toggleLayer("Otra"));
   </script>
 
   <script src="buscador.js"></script>
