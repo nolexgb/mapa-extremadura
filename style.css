@@ -1,75 +1,71 @@
-/* === Estilos generales === */
-html, body {
+body, html {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: system-ui, sans-serif;
-  background: #fff;
 }
 
-/* === Cabecera superior === */
 .header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   background: white;
-  padding: 10px 25px;
   border-bottom: 2px solid #eee;
+  padding: 10px 20px;
 }
 
-.header .logo {
+.logo {
   height: 45px;
 }
 
-.header .title-block {
-  text-align: center;
-  flex: 1;
-}
-
-.header .title {
+.title {
+  color: #2ecc71;
+  font-weight: bold;
   font-size: 22px;
-  font-weight: 800;
-  color: #27ae60;
 }
 
 .header small {
-  display: block;
   color: #777;
   font-size: 13px;
 }
 
-.header .web {
-  text-decoration: none;
-  color: #555;
-  font-size: 13px;
-}
-
-/* === Mapa === */
 #map {
   width: 100%;
-  height: calc(100vh - 110px);
+  height: calc(100vh - 90px);
 }
 
-/* === Buscador === */
+/* Buscador */
 .search-container {
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 10;
+  z-index: 5;
   background: white;
-  border-radius: 10px;
-  padding: 5px 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-.search-container input {
-  border: none;
-  outline: none;
-  font-size: 14px;
-  width: 220px;
+/* Botones de categorías */
+.legend-buttons {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  display: flex;
+  gap: 8px;
+  z-index: 5;
 }
 
-/* === Sugerencias del buscador === */
-.suggestion-box {
-  font-size: 14px;
-  width:
+.legend-buttons button {
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  background: #eee;
+  transition: 0.2s;
+}
+
+.legend-buttons button.active { background: #2ecc71; color: white; }
+.legend-buttons button:hover { opacity: 0.8; }
+
