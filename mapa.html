@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapa de Extremadura | CONGDEX</title>
+
+    <!-- Mapbox -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Poppins", Arial, sans-serif;
+      }
+
+      #map {
+        width: 100%;
+        height: 100vh;
+      }
+
+      #legend {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        background: rgba(255,255,255,0.9);
+        padding: 10px 15px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      }
+
+      .item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      .circle {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+
+      .social { background: #2a73ff; }
+      .ambiental { background: #27ae60; }
+      .economica { background: #f1c40f; }
+      .otra { background: #9b59b6; }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <div id="legend">
+      <div class="item"><span class="circle social"></span> Social</div>
+      <div class="item"><span class="circle ambiental"></span> Ambiental</div>
+      <div class="item"><span class="circle economica"></span> Económica</div>
+      <div class="item"><span class="circle otra"></span> Otra</div>
+    </div>
+
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1IjoiZ29uemFsZXMiLCJhIjoiY2xvYzF0NnR2MDF1bjJqb2E1MG56d3d1MCJ9.-rjzF2EhXcvPCIR9_cGfaw';
+
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [-6.3, 39.3],
+        zoom: 7
+      });
+
+      map.on('load', () => {
+        // Fuente GeoJSON desde tu GitHub Pages
+        map.addSource('entidades', {
+          type: 'geojson',
+          data: 'https://nolexgb.github.io/mapa-extremadura/entidades.geojson'
+        });
+
+        const categorias = {
+          "Social": "#2a73ff",
+          "Ambiental": "#27ae60",
+          "Económica": "#f1c40f",
+          "Otra": "#9b59b6"
+        };
+
+        // Crear capas por categoría
+        for (const [categoria, color] of Object.entries(categorias)) {
+          map.addLayer({
+            id: categoria,
+            type: 'circle',
+            source: 'entidades',
+            paint: {
+              'circle-radius': 8,
+              'circle-color': color,
+              'circle-stroke-width': 1.2,
+              'circle-stroke-color': '#fff'
+            },
+            filter: ['==', ['get', 'categoria'], categoria]
+          });
+        }
+
+        // Popup
+        map.on('click', (e) => {
+          const features = map.queryRenderedFeatures(e.point, { layers: Object.keys(categorias) });
+          if (!features.length) return;
+
+          const f = features[0].properties;
+          new mapboxgl.Popup()
+            .setLngLat(features[0].geometry.coordinates)
+            .setHTML(`
+              <strong>${f.nombre_entidad}</strong><br>
+              <em>${f.tematica}</em><br>
+              <small>${f.localidad}</small><br>
+              <a href="${f.pagina_contacto}" target="_blank">Visitar sitio</a>
+            `)
+            .addTo(map);
+        });
+
+        // Enfocar Extremadura (puntos visibles desde inicio)
+        map.fitBounds([
+          [-7.5, 38.3], // suroeste
+          [-5.1, 40.3]  // noreste
+        ]);
+
+        // Efecto de “enfoque” sobre Extremadura
+        map.setPaintProperty('background', 'background-color', '#e9e9e9');
+      });
+    </script>
+  </body>
+</html>
