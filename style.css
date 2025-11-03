@@ -14,10 +14,10 @@ body, html {
 
 .header {
   position: relative;
-  text-align: left;
-  padding: 20px 40px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  padding: 20px 40px;
+  text-align: left;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
 }
 
 .header .logo {
@@ -26,22 +26,22 @@ body, html {
 }
 
 .header h1 {
-  font-size: 22px;
   color: #2ecc71;
-  margin: 8px 0 4px;
+  font-size: 22px;
+  margin: 10px 0 4px;
   font-weight: 700;
 }
 
 .header p {
+  margin: 0;
   color: #555;
   font-size: 14px;
-  margin: 0;
 }
 
 .header .web {
   position: absolute;
   right: 30px;
-  top: 40px;
+  top: 35px;
   font-size: 14px;
   color: #777;
   text-decoration: none;
@@ -53,7 +53,7 @@ body, html {
 
 .search-container {
   position: absolute;
-  top: 160px;
+  top: 150px;
   right: 40px;
   background: white;
   border-radius: 8px;
@@ -76,6 +76,7 @@ body, html {
   display: flex;
   gap: 10px;
   z-index: 10;
+  flex-wrap: wrap;
 }
 
 .category-buttons button {
@@ -91,3 +92,41 @@ body, html {
 .btn-ambiental { background: #2ecc71; }
 .btn-economica { background: #f1c40f; color: #333; }
 .btn-otra { background: #9b59b6; }
+
+.marker {
+  border-radius: 50%;
+  background-size: cover;
+}
+
+/* 📱 Diseño responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .header .web {
+    position: static;
+    display: block;
+    margin-top: 8px;
+  }
+
+  #map {
+    top: 160px;
+  }
+
+  .search-container {
+    top: 170px;
+    right: 10px;
+  }
+
+  .search-container input {
+    width: 150px;
+  }
+
+  .category-buttons {
+    flex-wrap: wrap;
+    bottom: 10px;
+    left: 10px;
+  }
+}
