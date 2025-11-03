@@ -2,70 +2,92 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: system-ui, sans-serif;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  border-bottom: 2px solid #eee;
-  padding: 10px 20px;
-}
-
-.logo {
-  height: 45px;
-}
-
-.title {
-  color: #2ecc71;
-  font-weight: bold;
-  font-size: 22px;
-}
-
-.header small {
-  color: #777;
-  font-size: 13px;
+  font-family: "Poppins", sans-serif;
 }
 
 #map {
+  position: absolute;
+  top: 130px;
+  bottom: 0;
   width: 100%;
-  height: calc(100vh - 90px);
 }
 
-/* Buscador */
+.header {
+  position: relative;
+  text-align: left;
+  padding: 20px 40px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.header .logo {
+  height: 40px;
+  vertical-align: middle;
+}
+
+.header h1 {
+  font-size: 22px;
+  color: #2ecc71;
+  margin: 8px 0 4px;
+  font-weight: 700;
+}
+
+.header p {
+  color: #555;
+  font-size: 14px;
+  margin: 0;
+}
+
+.header .web {
+  position: absolute;
+  right: 30px;
+  top: 40px;
+  font-size: 14px;
+  color: #777;
+  text-decoration: none;
+}
+
+.header .web:hover {
+  color: #2ecc71;
+}
+
 .search-container {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 5;
+  top: 160px;
+  right: 40px;
   background: white;
-  padding: 6px 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  padding: 6px 10px;
+  z-index: 10;
 }
 
-/* Botones de categorías */
-.legend-buttons {
+.search-container input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  width: 200px;
+}
+
+.category-buttons {
   position: absolute;
   bottom: 15px;
   left: 15px;
   display: flex;
-  gap: 8px;
-  z-index: 5;
+  gap: 10px;
+  z-index: 10;
 }
 
-.legend-buttons button {
+.category-buttons button {
   border: none;
+  padding: 8px 14px;
   border-radius: 20px;
-  padding: 6px 12px;
+  color: #fff;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 13px;
-  background: #eee;
-  transition: 0.2s;
 }
 
-.legend-buttons button.active { background: #2ecc71; color: white; }
-.legend-buttons button:hover { opacity: 0.8; }
-
+.btn-social { background: #3498db; }
+.btn-ambiental { background: #2ecc71; }
+.btn-economica { background: #f1c40f; color: #333; }
+.btn-otra { background: #9b59b6; }
