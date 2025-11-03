@@ -1,41 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mapeo de Redes y Colectivos de Extremadura</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapeo de Redes y Colectivos de Extremadura</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
-    <!-- Mapbox -->
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
-
-    <!-- Estilos -->
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="header">
-      <div class="header-content">
-        <img src="logo_congdex.jpeg" alt="Logo CONGDEX" class="logo" />
-        <div>
-          <h1>MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</h1>
-          <p>Con el apoyo de la Diputación Provincial de Cáceres</p>
-        </div>
-        <a href="https://congdextremadura.org/" class="web-link" target="_blank">https://congdextremadura.org/</a>
+<body>
+  <!-- CABECERA -->
+  <header class="header">
+    <div class="header-content">
+      <img src="logo_congdex.jpeg" alt="Logo CONGDEX" class="logo">
+      <div class="header-text">
+        <h1>MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</h1>
+        <p>Con el apoyo de la Diputación Provincial de Cáceres</p>
       </div>
-    </header>
-
-    <div id="map"></div>
-
-    <div id="controls">
-      <input id="searchInput" type="text" placeholder="Buscar entidad..." />
-      <div id="categoryButtons">
-        <button class="btn social active" data-category="Social">Social</button>
-        <button class="btn ambiental active" data-category="Ambiental">Ambiental</button>
-        <button class="btn economica active" data-category="Económica">Económica</button>
-        <button class="btn otra active" data-category="Otra">Otra</button>
-      </div>
+      <a href="https://congdextremadura.org/" target="_blank" class="web-link">https://congdextremadura.org/</a>
     </div>
+  </header>
 
-    <script src="buscador.js"></script>
-  </body>
+  <!-- CONTENEDOR DEL MAPA -->
+  <main class="map-container">
+    <iframe 
+      src="mapa.html" 
+      title="Mapa de redes y colectivos de Extremadura"
+      frameborder="0" 
+      class="map-iframe">
+    </iframe>
+  </main>
+
+  <footer class="footer">
+    <p>Coordinadora Extremeña de ONGD | CONGDEX</p>
+  </footer>
+</body>
 </html>
