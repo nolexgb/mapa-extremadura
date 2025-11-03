@@ -62,7 +62,7 @@
       let markers = [];
       let allData = null;
 
-      // Carga de datos (ruta absoluta para GitHub Pages)
+      // === CARGA DE DATOS ===
       fetch("https://nolexgb.github.io/mapa-extremadura/entidades.geojson")
         .then(res => {
           if (!res.ok) throw new Error("Error cargando entidades.geojson");
@@ -112,7 +112,7 @@
         })
         .catch(err => console.error("Error cargando entidades.geojson:", err));
 
-      // Filtro de categorías
+      // === BOTONES DE FILTRO POR CATEGORÍA ===
       document.querySelectorAll(".category-buttons button").forEach(btn => {
         btn.addEventListener("click", () => {
           const cat = btn.getAttribute("data-cat");
@@ -126,39 +126,59 @@
         });
       });
 
-      // Atenuación del resto del mapa
+      // === ATENUACIÓN DEL RESTO DEL MAPA ===
       map.on("load", () => {
-        map.addSource("extremadura-mask", {
+        // Polígono de Extremadura (aproximado)
+        const extremadura = {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [[
+              [-7.6, 38.2],
+              [-7.6, 40.6],
+              [-5.1, 40.6],
+              [-5.1, 38.2],
+              [-7.6, 38.2]
+            ]]
+          }
+        };
+
+        // Polígono global (rectángulo completo)
+        const fondo = {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [[
+              [-10.5, 36.0],
+              [-10.5, 44.5],
+              [0.5, 44.5],
+              [0.5, 36.0],
+              [-10.5, 36.0]
+            ]]
+          }
+        };
+
+        // Máscara inversa: el resto del mapa más oscuro
+        map.addSource("mask", {
           type: "geojson",
           data: {
             type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Polygon",
-                  coordinates: [
-                    [
-                      [-10, 37],
-                      [-10, 43],
-                      [-1, 43],
-                      [-1, 37],
-                      [-10, 37]
-                    ]
-                  ]
-                }
-              }
-            ]
+            features: [fondo, extremadura]
           }
         });
 
         map.addLayer({
-          id: "mask",
+          id: "mask-fill",
           type: "fill",
-          source: "extremadura-mask",
+          source: "mask",
           paint: {
-            "fill-color": "rgba(0,0,0,0.2)",
-            "fill-outline-color": "rgba(0,0,0,0.2)"
+            "fill-color": [
+              "case",
+              ["==", ["geometry-type"], "Polygon"],
+              "rgba(0,0,0,0.35)",
+              "rgba(0,0,0,0)"
+            ],
+            "fill-outline-color": "rgba(0,0,0,0)"
           }
         });
       });
