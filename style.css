@@ -10,8 +10,16 @@ body, html {
   overflow: hidden;
 }
 
+/* MAPA */
 #map {
   position: absolute;
   top: 130px;
   bottom: 0;
   width: 100%;
+  height: calc(100vh - 130px);
+  z-index: 1;
+}
+
+/* CABECERA */
+.header {
+  background: #ffffff;
