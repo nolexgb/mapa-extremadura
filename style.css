@@ -1,47 +1,207 @@
-body {
+/* === RESET GENERAL === */
+* {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', sans-serif;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-#map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
+body {
+  background-color: #f9fafb;
+  color: #222;
+  overflow-x: hidden;
+}
+
+/* === CABECERA === */
+.header {
   width: 100%;
+  background-color: #fff;
+  padding: 20px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-#menu {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: white;
-  padding: 12px 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  max-width: 240px;
-}
-
-#menu h3 {
-  font-size: 16px;
-  margin-top: 0;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 6px;
-}
-
-#menu input {
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
   width: 100%;
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
-#filters label {
-  display: block;
-  margin-bottom: 6px;
+.logo {
+  height: 80px;
+  width: auto;
+}
+
+.header-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.header-text h1 {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #009b4d;
+  margin-bottom: 5px;
+}
+
+.header-text p {
+  font-size: 0.95em;
+  color: #555;
+}
+
+.web-link {
+  text-decoration: none;
+  color: gray;
+  font-size: 0.9em;
+  transition: color 0.3s;
+}
+
+.web-link:hover {
+  color: #009b4d;
+}
+
+/* === CONTENEDOR DEL MAPA === */
+.map-container {
+  width: 100%;
+  height: calc(100vh - 160px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #eef2f3;
+}
+
+.map-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* === PIE DE PÁGINA === */
+.footer {
+  width: 100%;
+  background: #f4f4f4;
+  color: #444;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 0.9em;
+  border-top: 1px solid #ddd;
+}
+
+/* === BOTONES DE CATEGORÍAS === */
+.category-buttons {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.category-buttons button {
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.9em;
   cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, opacity 0.3s;
 }
 
+.category-buttons button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.social {
+  background-color: #1E90FF;
+}
+.ambiental {
+  background-color: #3CB371;
+}
+.economica {
+  background-color: #FFD700;
+  color: #222;
+}
+.otra {
+  background-color: #BA55D3;
+}
+
+/* === BUSCADOR === */
+.search-box {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+  background: white;
+  border-radius: 12px;
+  padding: 8px 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-size: 0.95em;
+  width: 220px;
+}
+
+.search-box input::placeholder {
+  color: #aaa;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-text h1 {
+    font-size: 1.3em;
+  }
+
+  .web-link {
+    margin-top: 6px;
+  }
+
+  .category-buttons {
+    flex-wrap: wrap;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .search-box input {
+    width: 160px;
+  }
+
+  .map-container {
+    height: calc(100vh - 200px);
   }
 }
+
+/* === MEJORAS VISUALES === */
+button:focus,
+input:focus {
+  outline: 2px solid #009b4d;
+  outline-offset: 2px;
+}
+
+a {
+  color: #007b5e;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
