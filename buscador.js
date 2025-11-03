@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   suggestionBox.className = "suggestion-box";
   Object.assign(suggestionBox.style, {
     position: "absolute",
-    top: "200px",
+    top: "190px",
     right: "40px",
     background: "white",
     borderRadius: "8px",
@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
     zIndex: "999",
     maxHeight: "200px",
     overflowY: "auto",
-    display: "none"
+    display: "none",
+    width: "200px"
   });
   document.body.appendChild(suggestionBox);
 
