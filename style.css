@@ -12,12 +12,13 @@ body, html {
   width: 100%;
 }
 
+/* CABECERA */
 .header {
   position: relative;
   background: #fff;
   padding: 20px 40px;
   text-align: left;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .header .logo {
@@ -51,13 +52,14 @@ body, html {
   color: #2ecc71;
 }
 
+/* BUSCADOR */
 .search-container {
   position: absolute;
   top: 150px;
   right: 40px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   padding: 6px 10px;
   z-index: 10;
 }
@@ -69,6 +71,7 @@ body, html {
   width: 200px;
 }
 
+/* BOTONES */
 .category-buttons {
   position: absolute;
   bottom: 15px;
@@ -93,12 +96,13 @@ body, html {
 .btn-economica { background: #f1c40f; color: #333; }
 .btn-otra { background: #9b59b6; }
 
+/* MARCADORES */
 .marker {
   border-radius: 50%;
   background-size: cover;
 }
 
-/* 📱 Diseño responsive */
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .header {
     padding: 15px;
@@ -116,7 +120,7 @@ body, html {
   }
 
   .search-container {
-    top: 170px;
+    top: 175px;
     right: 10px;
   }
 
@@ -125,7 +129,6 @@ body, html {
   }
 
   .category-buttons {
-    flex-wrap: wrap;
     bottom: 10px;
     left: 10px;
   }
