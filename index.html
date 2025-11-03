@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <title>Mapeo de Redes y Colectivos de Extremadura</title>
 
   <!-- Mapbox -->
@@ -61,9 +62,12 @@
       let markers = [];
       let allData = null;
 
-      // Carga de datos
-      fetch("entidades.geojson")
-        .then(res => res.json())
+      // Carga de datos (ruta absoluta para GitHub Pages)
+      fetch("https://nolexgb.github.io/mapa-extremadura/entidades.geojson")
+        .then(res => {
+          if (!res.ok) throw new Error("Error cargando entidades.geojson");
+          return res.json();
+        })
         .then(data => {
           allData = data;
           const bounds = new mapboxgl.LngLatBounds();
@@ -103,6 +107,8 @@
 
           map.fitBounds(bounds, { padding: 50 });
           window.allData = allData;
+          window.map = map;
+          window.markers = markers;
         })
         .catch(err => console.error("Error cargando entidades.geojson:", err));
 
@@ -120,7 +126,7 @@
         });
       });
 
-      // Capa de atenuación fuera de Extremadura
+      // Atenuación del resto del mapa
       map.on("load", () => {
         map.addSource("extremadura-mask", {
           type: "geojson",
