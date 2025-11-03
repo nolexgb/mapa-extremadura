@@ -1,190 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-  <title>Mapeo de Redes y Colectivos de Extremadura</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapeo de Redes y Colectivos de Extremadura</title>
 
-  <!-- Mapbox -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+    <!-- Mapbox -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="style.css" />
-</head>
+    <!-- Estilos -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <img src="logo_congdex.jpeg" alt="Logo CONGDEX" class="logo" />
+        <div>
+          <h1>MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</h1>
+          <p>Con el apoyo de la Diputación Provincial de Cáceres</p>
+        </div>
+        <a href="https://congdextremadura.org/" class="web-link" target="_blank">https://congdextremadura.org/</a>
+      </div>
+    </header>
 
-<body>
-  <header class="header">
-    <img src="logo_congdex.jpeg" alt="Logo CONGDEX" class="logo" />
-    <div class="header-text">
-      <h1>MAPEO DE REDES Y COLECTIVOS DE EXTREMADURA</h1>
-      <p>Con el apoyo de la Diputación Provincial de Cáceres</p>
+    <div id="map"></div>
+
+    <div id="controls">
+      <input id="searchInput" type="text" placeholder="Buscar entidad..." />
+      <div id="categoryButtons">
+        <button class="btn social active" data-category="Social">Social</button>
+        <button class="btn ambiental active" data-category="Ambiental">Ambiental</button>
+        <button class="btn economica active" data-category="Económica">Económica</button>
+        <button class="btn otra active" data-category="Otra">Otra</button>
+      </div>
     </div>
-    <a href="https://congdextremadura.org/" class="web" target="_blank">
-      https://congdextremadura.org/
-    </a>
-  </header>
 
-  <div id="map"></div>
-
-  <div class="search-container">
-    <input type="text" id="searchBox" placeholder="Buscar entidad..." />
-  </div>
-
-  <div class="category-buttons">
-    <button data-cat="Social" class="btn btn-social">Social</button>
-    <button data-cat="Ambiental" class="btn btn-ambiental">Ambiental</button>
-    <button data-cat="Economica" class="btn btn-economica">Económica</button>
-    <button data-cat="Otra" class="btn btn-otra">Otra</button>
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      mapboxgl.accessToken = "pk.eyJ1Ijoibm9sZXhnYiIsImEiOiJjbTJocGhhd2owN2Z1MnBvM3h0Nml5bm1tIn0.3c5TPlZzqKQUZ8EJk2c-tg";
-
-      const map = new mapboxgl.Map({
-        container: "map",
-        style: "mapbox://styles/mapbox/light-v11",
-        center: [-6.35, 39.3],
-        zoom: 7,
-        minZoom: 6,
-        maxZoom: 15
-      });
-
-      const iconos = {
-        Social: "icono_social.png",
-        Ambiental: "icono_ambiental.png",
-        Economica: "icono_economica.png",
-        Otra: "icono_otra.png"
-      };
-
-      let markers = [];
-      let allData = null;
-
-      // === CARGA DE DATOS ===
-      fetch("https://nolexgb.github.io/mapa-extremadura/entidades.geojson")
-        .then(res => {
-          if (!res.ok) throw new Error("Error cargando entidades.geojson");
-          return res.json();
-        })
-        .then(data => {
-          allData = data;
-          const bounds = new mapboxgl.LngLatBounds();
-
-          data.features.forEach(f => {
-            const cat = f.properties.categoria.trim();
-            const el = document.createElement("div");
-            el.className = "marker";
-            el.style.backgroundImage = `url(${iconos[cat]})`;
-            el.style.width = "30px";
-            el.style.height = "30px";
-            el.style.backgroundSize = "cover";
-
-            const popup = new mapboxgl.Popup({ offset: 20 })
-              .setHTML(`
-                <div class="popup-content">
-                  <img src="${iconos[cat]}" width="22" style="vertical-align:middle;margin-right:6px;">
-                  <b>${f.properties.nombre_entidad}</b>
-                  <p><b>Temática:</b> ${f.properties.tematica}</p>
-                  <p><b>Ámbito:</b> ${f.properties.ambito_geografico}</p>
-                  <p><b>Localidad:</b> ${f.properties.localidad}</p>
-                  <p><b>Teléfono:</b> ${f.properties.telefono}</p>
-                  <p><b>Correo:</b> <a href="mailto:${f.properties.correo}">${f.properties.correo}</a></p>
-                  <p><a href="${f.properties.pagina_contacto}" target="_blank">Sitio web</a></p>
-                </div>
-              `);
-
-            const marker = new mapboxgl.Marker(el)
-              .setLngLat(f.geometry.coordinates)
-              .setPopup(popup)
-              .addTo(map);
-
-            marker.categoria = cat;
-            markers.push(marker);
-            bounds.extend(f.geometry.coordinates);
-          });
-
-          map.fitBounds(bounds, { padding: 50 });
-          window.allData = allData;
-          window.map = map;
-          window.markers = markers;
-        })
-        .catch(err => console.error("Error cargando entidades.geojson:", err));
-
-      // === BOTONES DE FILTRO POR CATEGORÍA ===
-      document.querySelectorAll(".category-buttons button").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const cat = btn.getAttribute("data-cat");
-          btn.classList.toggle("inactive");
-          markers.forEach(m => {
-            if (m.categoria === cat) {
-              const visible = m._element.style.display !== "none";
-              m._element.style.display = visible ? "none" : "block";
-            }
-          });
-        });
-      });
-
-      // === ATENUACIÓN DEL RESTO DEL MAPA ===
-      map.on("load", () => {
-        // Polígono de Extremadura (aproximado)
-        const extremadura = {
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [[
-              [-7.6, 38.2],
-              [-7.6, 40.6],
-              [-5.1, 40.6],
-              [-5.1, 38.2],
-              [-7.6, 38.2]
-            ]]
-          }
-        };
-
-        // Polígono global (rectángulo completo)
-        const fondo = {
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [[
-              [-10.5, 36.0],
-              [-10.5, 44.5],
-              [0.5, 44.5],
-              [0.5, 36.0],
-              [-10.5, 36.0]
-            ]]
-          }
-        };
-
-        // Máscara inversa: el resto del mapa más oscuro
-        map.addSource("mask", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [fondo, extremadura]
-          }
-        });
-
-        map.addLayer({
-          id: "mask-fill",
-          type: "fill",
-          source: "mask",
-          paint: {
-            "fill-color": [
-              "case",
-              ["==", ["geometry-type"], "Polygon"],
-              "rgba(0,0,0,0.35)",
-              "rgba(0,0,0,0)"
-            ],
-            "fill-outline-color": "rgba(0,0,0,0)"
-          }
-        });
-      });
-    });
-  </script>
-
-  <script src="buscador.js"></script>
-</body>
+    <script src="buscador.js"></script>
+  </body>
 </html>
