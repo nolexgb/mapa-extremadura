@@ -1,133 +1,205 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mapa de Extremadura | CONGDEX</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa - Redes y Colectivos de Extremadura</title>
 
-    <!-- Mapbox -->
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+  <!-- MAPBOX -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
 
-    <style>
-      body, html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: "Poppins", Arial, sans-serif;
+  <!-- ESTILOS -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Estilo del buscador */
+    .search-box {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: white;
+      border-radius: 10px;
+      padding: 6px 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      width: 200px;
+    }
+
+    /* Botones de categorías */
+    .category-buttons {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .category-buttons button {
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .category-buttons button:hover {
+      transform: scale(1.05);
+    }
+
+    .social { background: #1E90FF; }
+    .ambiental { background: #3CB371; }
+    .economica { background: #FFD700; color: black; }
+    .otra { background: #BA55D3; }
+
+    @media (max-width: 768px) {
+      .search-box input {
+        width: 140px;
       }
 
-      #map {
-        width: 100%;
-        height: 100vh;
+      .category-buttons {
+        flex-wrap: wrap;
       }
+    }
+  </style>
+</head>
 
-      #legend {
-        position: absolute;
-        bottom: 15px;
-        left: 15px;
-        background: rgba(255,255,255,0.9);
-        padding: 10px 15px;
-        border-radius: 12px;
-        font-size: 0.9rem;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      }
+<body>
+  <div id="map"></div>
 
-      .item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 5px;
-      }
+  <!-- Buscador -->
+  <div class="search-box">
+    <input type="text" id="buscador" placeholder="Buscar entidad...">
+  </div>
 
-      .circle {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        margin-right: 8px;
-      }
+  <!-- Botones de categorías -->
+  <div class="category-buttons">
+    <button class="social" onclick="filtrarCategoria('Social')">Social</button>
+    <button class="ambiental" onclick="filtrarCategoria('Ambiental')">Ambiental</button>
+    <button class="economica" onclick="filtrarCategoria('Económica')">Económica</button>
+    <button class="otra" onclick="filtrarCategoria('Otra')">Otra</button>
+  </div>
 
-      .social { background: #2a73ff; }
-      .ambiental { background: #27ae60; }
-      .economica { background: #f1c40f; }
-      .otra { background: #9b59b6; }
-    </style>
-  </head>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoibm9sZXhnYiIsImEiOiJjbTc5MmM2c2kwMnZyMmxwYnVxN2RscnZtIn0.G_1QeoBGOnj_zxgsK9rKkQ';
 
-  <body>
-    <div id="map"></div>
-    <div id="legend">
-      <div class="item"><span class="circle social"></span> Social</div>
-      <div class="item"><span class="circle ambiental"></span> Ambiental</div>
-      <div class="item"><span class="circle economica"></span> Económica</div>
-      <div class="item"><span class="circle otra"></span> Otra</div>
-    </div>
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [-6.4, 39.3],
+      zoom: 7
+    });
 
-    <script>
-      mapboxgl.accessToken = 'pk.eyJ1IjoiZ29uemFsZXMiLCJhIjoiY2xvYzF0NnR2MDF1bjJqb2E1MG56d3d1MCJ9.-rjzF2EhXcvPCIR9_cGfaw';
+    // Contenedor de marcadores
+    let marcadores = [];
 
-      const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [-6.3, 39.3],
-        zoom: 7
-      });
+    // Cargar datos del GeoJSON
+    fetch('entidades.geojson')
+      .then(response => response.json())
+      .then(data => {
+        mostrarEntidades(data.features);
 
-      map.on('load', () => {
-        // Fuente GeoJSON desde tu GitHub Pages
-        map.addSource('entidades', {
-          type: 'geojson',
-          data: 'https://nolexgb.github.io/mapa-extremadura/entidades.geojson'
+        // Mostrar todos los puntos al inicio
+        map.on('load', () => {
+          map.resize();
         });
 
-        const categorias = {
-          "Social": "#2a73ff",
-          "Ambiental": "#27ae60",
-          "Económica": "#f1c40f",
-          "Otra": "#9b59b6"
+        // Hacer que el mapa se ajuste automáticamente a los puntos
+        const bounds = new mapboxgl.LngLatBounds();
+        data.features.forEach(f => bounds.extend(f.geometry.coordinates));
+        map.fitBounds(bounds, { padding: 60, maxZoom: 8 });
+      })
+      .catch(err => console.error('Error al cargar entidades.geojson:', err));
+
+    // Mostrar entidades
+    function mostrarEntidades(entidades) {
+      limpiarMarcadores();
+
+      entidades.forEach(ent => {
+        const cat = ent.properties.categoria.toLowerCase();
+        const iconos = {
+          social: 'icon_social.png',
+          ambiental: 'icon_ambiental.png',
+          económica: 'icon_economica.png',
+          otra: 'icon_otra.png'
         };
 
-        // Crear capas por categoría
-        for (const [categoria, color] of Object.entries(categorias)) {
-          map.addLayer({
-            id: categoria,
-            type: 'circle',
-            source: 'entidades',
-            paint: {
-              'circle-radius': 8,
-              'circle-color': color,
-              'circle-stroke-width': 1.2,
-              'circle-stroke-color': '#fff'
-            },
-            filter: ['==', ['get', 'categoria'], categoria]
-          });
-        }
+        const el = document.createElement('img');
+        el.src = iconos[cat] || 'icon_otra.png';
+        el.style.width = '28px';
+        el.style.height = '28px';
+        el.style.borderRadius = '50%';
+        el.style.cursor = 'pointer';
 
-        // Popup
-        map.on('click', (e) => {
-          const features = map.queryRenderedFeatures(e.point, { layers: Object.keys(categorias) });
-          if (!features.length) return;
-
-          const f = features[0].properties;
-          new mapboxgl.Popup()
-            .setLngLat(features[0].geometry.coordinates)
-            .setHTML(`
-              <strong>${f.nombre_entidad}</strong><br>
-              <em>${f.tematica}</em><br>
-              <small>${f.localidad}</small><br>
-              <a href="${f.pagina_contacto}" target="_blank">Visitar sitio</a>
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat(ent.geometry.coordinates)
+          .setPopup(
+            new mapboxgl.Popup({ offset: 20 }).setHTML(`
+              <strong>${ent.properties.nombre_entidad}</strong><br>
+              <em>${ent.properties.tematica}</em><br>
+              📍 ${ent.properties.localidad}<br>
+              ☎️ ${ent.properties.telefono}<br>
+              ✉️ ${ent.properties.correo}<br>
+              🌐 <a href="${ent.properties.pagina_contacto}" target="_blank">Ver sitio web</a>
             `)
-            .addTo(map);
-        });
+          )
+          .addTo(map);
 
-        // Enfocar Extremadura (puntos visibles desde inicio)
-        map.fitBounds([
-          [-7.5, 38.3], // suroeste
-          [-5.1, 40.3]  // noreste
-        ]);
-
-        // Efecto de “enfoque” sobre Extremadura
-        map.setPaintProperty('background', 'background-color', '#e9e9e9');
+        marcadores.push(marker);
       });
-    </script>
-  </body>
+    }
+
+    // Limpia los marcadores antes de volver a mostrarlos
+    function limpiarMarcadores() {
+      marcadores.forEach(m => m.remove());
+      marcadores = [];
+    }
+
+    // Filtrado por categoría
+    function filtrarCategoria(categoria) {
+      fetch('entidades.geojson')
+        .then(response => response.json())
+        .then(data => {
+          const filtradas = data.features.filter(
+            e => e.properties.categoria.toLowerCase() === categoria.toLowerCase()
+          );
+          mostrarEntidades(filtradas);
+        });
+    }
+
+    // Buscador predictivo
+    document.getElementById('buscador').addEventListener('input', e => {
+      const valor = e.target.value.toLowerCase();
+      fetch('entidades.geojson')
+        .then(response => response.json())
+        .then(data => {
+          const filtradas = data.features.filter(
+            e => e.properties.nombre_entidad.toLowerCase().includes(valor)
+          );
+          mostrarEntidades(filtradas);
+        });
+    });
+  </script>
+</body>
 </html>
