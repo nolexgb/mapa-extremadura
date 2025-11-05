@@ -34,15 +34,9 @@ body {
   gap: 15px;
 }
 
-.logo {
-  height: 80px;
-  width: auto;
-}
+.logo { height: 80px; width: auto; }
 
-.header-text {
-  flex: 1;
-  min-width: 280px;
-}
+.header-text { flex: 1; min-width: 280px; }
 
 .header-text h1 {
   font-size: 1.6em;
@@ -51,50 +45,20 @@ body {
   margin-bottom: 5px;
 }
 
-.header-text p {
-  font-size: 0.95em;
-  color: #555;
-}
+.header-text p { font-size: 0.95em; color: #555; }
 
 .web-link {
-  text-decoration: none;
-  color: gray;
-  font-size: 0.9em;
-  transition: color 0.3s;
+  text-decoration: none; color: gray; font-size: 0.9em; transition: color 0.3s;
 }
+.web-link:hover { color: #009b4d; }
 
-.web-link:hover {
-  color: #009b4d;
-}
-
-/* === CONTENEDOR DEL MAPA === */
-.map-container {
+/* === MAPA: tamaño correcto === */
+#map {
   width: 100%;
-  height: calc(100vh - 160px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #eef2f3;
+  height: calc(100vh - 160px); /* ocupa todo menos la cabecera */
 }
 
-.map-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-/* === PIE DE PÁGINA === */
-.footer {
-  width: 100%;
-  background: #f4f4f4;
-  color: #444;
-  text-align: center;
-  padding: 15px 0;
-  font-size: 0.9em;
-  border-top: 1px solid #ddd;
-}
-
-/* === BOTONES DE CATEGORÍAS === */
+/* === BOTONES DE CATEGORÍAS (checkboxes) === */
 .category-buttons {
   position: absolute;
   bottom: 20px;
@@ -102,38 +66,30 @@ body {
   display: flex;
   gap: 12px;
   z-index: 10;
+  flex-wrap: wrap;
 }
 
-.category-buttons button {
-  border: none;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 25px;
-  font-weight: bold;
+.category-buttons label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 22px;
+  font-weight: 600;
   font-size: 0.9em;
+  color: #fff;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s, opacity 0.3s;
+  user-select: none;
 }
 
-.category-buttons button:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
+.category-buttons input { accent-color: #fff; transform: scale(1.1); }
 
-.social {
-  background-color: #1E90FF;
-}
-.ambiental {
-  background-color: #3CB371;
-}
-.economica {
-  background-color: #FFD700;
-  color: #222;
-}
-.otra {
-  background-color: #BA55D3;
-}
+/* colores por categoría */
+label[data-cat="Social"]     { background-color: #1E90FF; }
+label[data-cat="Ambiental"]  { background-color: #3CB371; }
+label[data-cat="Económica"]  { background-color: #FFD700; color:#222; }
+label[data-cat="Otra"]       { background-color: #BA55D3; }
 
 /* === BUSCADOR === */
 .search-box {
@@ -151,57 +107,21 @@ body {
   border: none;
   outline: none;
   font-size: 0.95em;
-  width: 220px;
+  width: 260px;
 }
 
-.search-box input::placeholder {
-  color: #aaa;
-}
+.search-box input::placeholder { color: #aaa; }
 
-/* === RESPONSIVE DESIGN === */
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .header-text h1 {
-    font-size: 1.3em;
-  }
-
-  .web-link {
-    margin-top: 6px;
-  }
-
-  .category-buttons {
-    flex-wrap: wrap;
-    bottom: 10px;
-    left: 10px;
-  }
-
-  .search-box input {
-    width: 160px;
-  }
-
-  .map-container {
-    height: calc(100vh - 200px);
-  }
+  .header-content { flex-direction: column; align-items: center; text-align: center; }
+  .header-text h1 { font-size: 1.3em; }
+  .web-link { margin-top: 6px; }
+  .search-box input { width: 180px; }
+  #map { height: calc(100vh - 200px); }
 }
 
-/* === MEJORAS VISUALES === */
-button:focus,
-input:focus {
-  outline: 2px solid #009b4d;
-  outline-offset: 2px;
-}
-
-a {
-  color: #007b5e;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
+/* Accesibilidad básica */
+button:focus, input:focus { outline: 2px solid #009b4d; outline-offset: 2px; }
+a { color: #007b5e; text-decoration: none; }
+a:hover { text-decoration: underline; }
