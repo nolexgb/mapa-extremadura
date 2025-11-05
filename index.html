@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mapa Interactivo de Extremadura</title>
+  <title>Mapa de Redes y Colectivos de Extremadura</title>
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -13,21 +13,23 @@
     <div class="header-content">
       <img class="logo" src="logo_congdex.jpeg" alt="CONGDEX">
       <div class="header-text">
-        <h1>Redes y Colectivos de Extremadura</h1>
-        <p>Mapa interactivo de entidades de la región.</p>
+        <h1 class="titulo">Mapa de Redes y Colectivos de Extremadura</h1>
+        <p class="subtitulo">Con el apoyo de la Diputación Provincial de Cáceres</p>
       </div>
       <a class="web-link" href="https://coordinadoraextremadura.org" target="_blank" rel="noopener">coordinadoraextremadura.org</a>
     </div>
   </header>
 
-  <div class="search-box">
-    <input id="busqueda" type="text" placeholder="Buscar..." aria-label="Buscar entidades">
-  </div>
-
-  <div id="filters" class="category-buttons" aria-label="Filtros de categoría"></div>
-
   <div id="map" role="application" aria-label="Mapa interactivo"></div>
+
+  <div class="map-controls">
+    <div class="search-box">
+      <input id="busqueda" type="text" placeholder="Buscar por nombre, localidad o temática" aria-label="Buscar entidades">
+    </div>
+    <div id="filters" class="category-buttons" aria-label="Filtros de categoría"></div>
+  </div>
 
   <script src="buscador.js"></script>
 </body>
 </html>
+
