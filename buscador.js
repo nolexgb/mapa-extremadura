@@ -116,10 +116,14 @@ map.on('load', async () => {
   );
 
   const bounds = new mapboxgl.LngLatBounds();
-  geojson.features.forEach(f => { if (f.geometry && f.geometry.coordinates) bounds.extend(f.geometry.coordinates); });
+  geojson.features.forEach(f => {
+    if (f.geometry && f.geometry.coordinates && Array.isArray(f.geometry.coordinates)) {
+      bounds.extend(f.geometry.coordinates);
+    }
+  });
   if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: 60, maxZoom: 9 });
 
-  const categorias = [...new Set(geojson.features.map(f => f.properties.categoria).filter(Boolean))];
+  const categorias = [...new Set(geojson.features.map(f => (f.properties || {}).categoria).filter(Boolean))];
   categorias.forEach(cat => categoriasActivas.add(cat));
   const cont = document.getElementById('filters');
   cont.innerHTML = '';
@@ -152,7 +156,9 @@ map.on('load', async () => {
           (p.tematica || '').toLowerCase().includes(t)
         );
       });
-      if (match && match.geometry && match.geometry.coordinates) map.flyTo({ center: match.geometry.coordinates, zoom: 10 });
+      if (match && match.geometry && match.geometry.coordinates) {
+        map.flyTo({ center: match.geometry.coordinates, zoom: 10 });
+      }
     }
   });
 });
