@@ -16,54 +16,30 @@ function aplicarFiltro() {
   const filtroCategorias = categoriasActivas.size
     ? ['in', ['get', 'categoria'], ['literal', Array.from(categoriasActivas)]]
     : true;
-  const t = textoBusqueda.trim().toLowerCase();
-  const filtroTexto = t.length
-    ? ['any',
-        ['>=', ['index-of', t, ['downcase', ['get', 'nombre_entidad']]], 0],
-        ['>=', ['index-of', t, ['downcase', ['get', 'localidad']]], 0],
-        ['>=', ['index-of', t, ['downcase', ['get', 'tematica']]], 0]
-      ]
-    : true;
-  const filtroFinal =
-    filtroCategorias === true && filtroTexto === true ? true :
-    filtroCategorias === true ? filtroTexto :
-    filtroTexto === true ? filtroCategorias :
-    ['all', filtroCategorias, filtroTexto];
-  if (map.getLayer('entidades-puntos')) map.setFilter('entidades-puntos', filtroFinal);
+  if (map.getLayer('entidades-puntos')) map.setFilter('entidades-puntos', filtroCategorias);
 }
 
-function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function norm(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
 
 function renderSuggestions(q) {
   const box = document.getElementById('suggestions');
   if (!q) { box.classList.remove('show'); box.innerHTML = ''; activeIndex = -1; return; }
   const nq = norm(q);
-  const starts = entidades.filter(f => {
-    const p = f.properties||{};
-    return norm(p.nombre_entidad).startsWith(nq) || norm(p.localidad).startsWith(nq) || norm(p.tematica).startsWith(nq);
-  });
-  const pool = starts.length ? starts : entidades.filter(f => {
-    const p = f.properties||{};
-    return norm(p.nombre_entidad).includes(nq) || norm(p.localidad).includes(nq) || norm(p.tematica).includes(nq);
-  });
-  const list = pool.slice(0,12).map((f,i) => {
-    const p=f.properties||{};
-    const name=p.nombre_entidad||'';
-    const meta=[p.localidad,p.tematica].filter(Boolean).join(' · ');
-    return `<li role="option" data-i="${i}"><span class="s-name">${name}</span><span class="s-meta">${meta}</span></li>`;
-  }).join('');
-  if (!list){ box.classList.remove('show'); box.innerHTML=''; activeIndex=-1; return; }
+  const results = entidades.filter(f => norm(f.properties.nombre_entidad).startsWith(nq)).slice(0, 15);
+  if (!results.length) { box.classList.remove('show'); box.innerHTML = ''; activeIndex = -1; return; }
+  const list = results.map((f, i) => `<li role="option" data-i="${i}">${f.properties.nombre_entidad}</li>`).join('');
   box.innerHTML = list;
   box.classList.add('show');
   activeIndex = -1;
 }
 
-function selectSuggestionByIndex(idx, pool) {
-  const f = pool[idx];
-  if (!f || !f.geometry || !f.geometry.coordinates) return;
-  const p = f.properties||{};
-  const input = document.getElementById('busqueda');
-  input.value = p.nombre_entidad || '';
+function selectEntity(index, pool) {
+  const f = pool[index];
+  if (!f) return;
+  const p = f.properties || {};
+  document.getElementById('busqueda').value = p.nombre_entidad || '';
   document.getElementById('suggestions').classList.remove('show');
   map.flyTo({ center: f.geometry.coordinates, zoom: 10 });
 }
@@ -110,46 +86,37 @@ map.on('load', async () => {
          ${p.correo || ''}${web}`
       ).addTo(map);
   });
-  map.on('mouseenter', 'entidades-puntos', () => map.getCanvas().style.cursor = 'pointer');
-  map.on('mouseleave', 'entidades-puntos', () => map.getCanvas().style.cursor = '');
-
-  map.addLayer(
-    {
-      id: 'extremadura-outline',
-      type: 'line',
-      source: 'composite',
-      'source-layer': 'admin',
-      filter: ['all',
-        ['==', ['get','admin_level'], 1],
-        ['any',
-          ['==', ['get','iso_3166_2_left'], 'ES-EX'],
-          ['==', ['get','iso_3166_2_right'], 'ES-EX']
-        ]
-      ],
-      paint: { 'line-color': '#3CB371', 'line-width': 1.5, 'line-opacity': 0.9 }
-    },
-    'entidades-puntos'
-  );
 
   const bounds = new mapboxgl.LngLatBounds();
   entidades.forEach(f => { if (f.geometry && Array.isArray(f.geometry.coordinates)) bounds.extend(f.geometry.coordinates); });
   if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: 60, maxZoom: 9 });
 
-  const categorias = [...new Set(entidades.map(f => (f.properties||{}).categoria).filter(Boolean))];
+  const categorias = [...new Set(entidades.map(f => (f.properties || {}).categoria).filter(Boolean))];
   categorias.forEach(cat => categoriasActivas.add(cat));
+
+  const counts = {};
+  entidades.forEach(f => {
+    const cat = f.properties.categoria;
+    if (!cat) return;
+    counts[cat] = (counts[cat] || 0) + 1;
+  });
+
   const cont = document.getElementById('filters');
   cont.innerHTML = '';
   categorias.forEach(cat => {
     const label = document.createElement('label');
     label.dataset.cat = cat;
-    const id = `cb-${cat.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}`;
-    label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat}</span>`;
+    const id = `cb-${cat.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()}`;
+    const total = counts[cat] || 0;
+    label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat} (${total})</span>`;
     cont.appendChild(label);
   });
+
   cont.addEventListener('change', (e) => {
     if (e.target && e.target.type === 'checkbox') {
       const { value, checked } = e.target;
-      if (checked) categoriasActivas.add(value); else categoriasActivas.delete(value);
+      if (checked) categoriasActivas.add(value);
+      else categoriasActivas.delete(value);
       aplicarFiltro();
     }
   });
@@ -159,43 +126,33 @@ map.on('load', async () => {
 
   input.addEventListener('input', (e) => {
     textoBusqueda = e.target.value || '';
-    aplicarFiltro();
     renderSuggestions(textoBusqueda);
   });
 
   box.addEventListener('click', (e) => {
     const li = e.target.closest('li');
     if (!li) return;
-    const nq = norm(document.getElementById('busqueda').value);
-    const pool = entidades.filter(f => {
-      const p=f.properties||{};
-      return norm(p.nombre_entidad).startsWith(nq) || norm(p.localidad).startsWith(nq) || norm(p.tematica).startsWith(nq);
-    });
-    const list = (pool.length ? pool : entidades).slice(0,12);
-    selectSuggestionByIndex(parseInt(li.dataset.i,10), list);
-    box.classList.remove('show');
+    const q = norm(document.getElementById('busqueda').value);
+    const pool = entidades.filter(f => norm(f.properties.nombre_entidad).startsWith(q)).slice(0, 15);
+    selectEntity(parseInt(li.dataset.i, 10), pool);
   });
 
   input.addEventListener('keydown', (e) => {
-    const nq = norm(input.value);
-    const starts = entidades.filter(f => {
-      const p=f.properties||{};
-      return norm(p.nombre_entidad).startsWith(nq) || norm(p.localidad).startsWith(nq) || norm(p.tematica).startsWith(nq);
-    });
-    const pool = (starts.length ? starts : entidades).slice(0,12);
+    const q = norm(input.value);
+    const pool = entidades.filter(f => norm(f.properties.nombre_entidad).startsWith(q)).slice(0, 15);
     const items = box.querySelectorAll('li');
     if (!items.length) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       activeIndex = (activeIndex + 1) % items.length;
-      items.forEach((li,i)=>li.classList.toggle('active', i===activeIndex));
+      items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       activeIndex = (activeIndex - 1 + items.length) % items.length;
-      items.forEach((li,i)=>li.classList.toggle('active', i===activeIndex));
+      items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (activeIndex >= 0) selectSuggestionByIndex(activeIndex, pool);
+      if (activeIndex >= 0) selectEntity(activeIndex, pool);
       box.classList.remove('show');
     } else if (e.key === 'Escape') {
       box.classList.remove('show'); activeIndex = -1;
