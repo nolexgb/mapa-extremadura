@@ -3,22 +3,17 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibW1pbGFjIiwiYSI6ImNpeWhkNXZsMDA1ZDgzMm4wdWRzd
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/light-v11',
-  center: [-6.4, 39.3], // Extremadura
+  center: [-6.4, 39.3],
   zoom: 7
 });
 
-// Estado para combinar filtros
-let categoriasActivas = new Set(); // se rellenará con todas al cargar
+let categoriasActivas = new Set();
 let textoBusqueda = '';
 
-/** Construye y aplica la expresión de filtro en base a categoría + búsqueda */
 function aplicarFiltro() {
-  // 1) filtro por categorías
   const filtroCategorias = categoriasActivas.size
     ? ['in', ['get', 'categoria'], ['literal', Array.from(categoriasActivas)]]
-    : true; // si no hay ninguna (no debería), mostramos todo
-
-  // 2) filtro por texto (en nombre_entidad, localidad o tematica)
+    : true;
   const t = textoBusqueda.trim().toLowerCase();
   const filtroTexto = t.length
     ? ['any',
@@ -27,8 +22,6 @@ function aplicarFiltro() {
         ['>=', ['index-of', t, ['downcase', ['get', 'tematica']]], 0]
       ]
     : true;
-
-  // 3) combinación
   const filtroFinal =
     filtroCategorias === true && filtroTexto === true
       ? true
@@ -37,21 +30,29 @@ function aplicarFiltro() {
         : filtroTexto === true
           ? filtroCategorias
           : ['all', filtroCategorias, filtroTexto];
-
   if (map.getLayer('entidades-puntos')) {
     map.setFilter('entidades-puntos', filtroFinal);
   }
 }
 
 map.on('load', async () => {
-  // Cargar GeoJSON
+  const fadedLayers = [
+    'water', 'land', 'landcover', 'landuse',
+    'building', 'road', 'road-label',
+    'settlement', 'settlement-subdivision-label',
+    'state-label', 'country-label'
+  ];
+  fadedLayers.forEach(id => {
+    if (map.getLayer(id)) {
+      map.setPaintProperty(id, 'fill-opacity', 0.3);
+    }
+  });
+
   const response = await fetch('entidades.geojson');
   const geojson = await response.json();
 
-  // Fuente
   map.addSource('entidades', { type: 'geojson', data: geojson });
 
-  // Capa de puntos (colores por categoría del GeoJSON: Social, Ambiental, Económica, Otra)
   map.addLayer({
     id: 'entidades-puntos',
     type: 'circle',
@@ -72,50 +73,96 @@ map.on('load', async () => {
     }
   });
 
-  // Popups
   map.on('click', 'entidades-puntos', (e) => {
     const f = e.features[0];
     const p = f.properties;
-
     const web = p.pagina_contacto && p.pagina_contacto !== 'null'
-      ? `<br>🌐 <a href="${p.pagina_contacto}" target="_blank" rel="noopener">Sitio web</a>`
+      ? `<br><a href="${p.pagina_contacto}" target="_blank" rel="noopener">Sitio web</a>`
       : '';
-
     new mapboxgl.Popup({ offset: 16 })
       .setLngLat(f.geometry.coordinates)
-      .setHTML(`
-        <strong>${p.nombre_entidad || 'Entidad'}</strong><br>
+      .setHTML(
+        `<strong>${p.nombre_entidad || ''}</strong><br>
         <em>${p.tematica || ''}</em><br>
-        📍 ${p.localidad || ''}<br>
-        ☎️ ${p.telefono || ''}<br>
-        ✉️ ${p.correo || ''}${web}
-      `)
+        ${p.localidad || ''}<br>
+        ${p.telefono || ''}<br>
+        ${p.correo || ''}${web}`
+      )
       .addTo(map);
   });
 
   map.on('mouseenter', 'entidades-puntos', () => map.getCanvas().style.cursor = 'pointer');
   map.on('mouseleave', 'entidades-puntos', () => map.getCanvas().style.cursor = '');
 
-  // Ajuste de vista a todas las entidades
-  const bounds = new mapboxgl.LngLatBounds();
-  geojson.features.forEach(f => bounds.extend(f.geometry.coordinates));
-  map.fitBounds(bounds, { padding: 60, maxZoom: 9 });
+  const extremaduraPolygon = {
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [-7.55, 40.53],
+        [-7.35, 39.85],
+        [-7.3, 39.35],
+        [-7.15, 38.7],
+        [-6.9, 38.35],
+        [-6.2, 38.1],
+        [-5.6, 38.3],
+        [-5.35, 38.7],
+        [-5.25, 39.3],
+        [-5.45, 39.9],
+        [-5.9, 40.35],
+        [-6.4, 40.55],
+        [-7.0, 40.55],
+        [-7.55, 40.53]
+      ]]
+    }
+  };
 
-  // ====== Filtros por categoría (checkboxes) ======
+  map.addSource('extremadura', { type: 'geojson', data: extremaduraPolygon });
+
+  map.addLayer({
+    id: 'resto-fondo',
+    type: 'background',
+    paint: {
+      'background-color': '#f5f5f5',
+      'background-opacity': 0.8
+    },
+    before: 'entidades-puntos'
+  });
+
+  map.addLayer({
+    id: 'extremadura-fill',
+    type: 'fill',
+    source: 'extremadura',
+    paint: {
+      'fill-color': '#a3e3a3',
+      'fill-opacity': 0.25
+    }
+  });
+
+  map.addLayer({
+    id: 'extremadura-line',
+    type: 'line',
+    source: 'extremadura',
+    paint: {
+      'line-color': '#3CB371',
+      'line-width': 2
+    }
+  });
+
+  const bounds = new mapboxgl.LngLatBounds();
+  extremaduraPolygon.geometry.coordinates[0].forEach(coord => bounds.extend(coord));
+  map.fitBounds(bounds, { padding: 40, maxZoom: 8.8, duration: 1200 });
+
   const categorias = [...new Set(geojson.features.map(f => f.properties.categoria))];
   categorias.forEach(cat => categoriasActivas.add(cat));
-
   const cont = document.getElementById('filters');
-  cont.innerHTML = ''; // por si se recarga
+  cont.innerHTML = '';
 
   categorias.forEach(cat => {
     const label = document.createElement('label');
     label.dataset.cat = cat;
     const id = `cb-${cat.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()}`;
-    label.innerHTML = `
-      <input type="checkbox" id="${id}" value="${cat}" checked>
-      <span>${cat}</span>
-    `;
+    label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat}</span>`;
     cont.appendChild(label);
   });
 
@@ -128,13 +175,10 @@ map.on('load', async () => {
     }
   });
 
-  // ====== Buscador ======
   const input = document.getElementById('busqueda');
   input.addEventListener('input', (e) => {
     textoBusqueda = e.target.value || '';
     aplicarFiltro();
-
-    // zoom a primera coincidencia cuando hay texto
     const t = textoBusqueda.trim().toLowerCase();
     if (t.length) {
       const match = geojson.features.find(f => {
@@ -145,60 +189,7 @@ map.on('load', async () => {
           (p.tematica || '').toLowerCase().includes(t)
         );
       });
-      if (match) {
-        map.flyTo({ center: match.geometry.coordinates, zoom: 10 });
-      }
-    }
-  });
-});
-      'circle-stroke-color': '#fff',
-      'circle-stroke-width': 1.5
-    }
-  });
-
-  // === POPUPS ===
-  map.on('click', 'entidades-puntos', (e) => {
-    const props = e.features[0].properties;
-    new mapboxgl.Popup()
-      .setLngLat(e.lngLat)
-      .setHTML(`
-        <h4>${props.nombre}</h4>
-        <p><strong>Tipo:</strong> ${props.tipo}</p>
-        <p>${props.descripcion || ''}</p>
-      `)
-      .addTo(map);
-  });
-
-  // === FILTROS DINÁMICOS ===
-  const response = await fetch('entidades.geojson');
-  const geojson = await response.json();
-  const tipos = [...new Set(geojson.features.map(f => f.properties.tipo))];
-
-  const filtersContainer = document.getElementById('filters');
-  tipos.forEach(tipo => {
-    const label = document.createElement('label');
-    label.innerHTML = `<input type="checkbox" value="${tipo}" checked> ${tipo}`;
-    filtersContainer.appendChild(label);
-  });
-
-  filtersContainer.addEventListener('change', () => {
-    const activos = Array.from(
-      filtersContainer.querySelectorAll('input[type=checkbox]:checked')
-    ).map(cb => cb.value);
-    map.setFilter('entidades-puntos', ['in', ['get', 'tipo'], ['literal', activos]]);
-  });
-
-  // === BUSCADOR ===
-  const input = document.getElementById('busqueda');
-  input.addEventListener('input', (e) => {
-    const texto = e.target.value.toLowerCase();
-    const coincidencias = geojson.features.filter(f =>
-      f.properties.nombre.toLowerCase().includes(texto)
-    );
-
-    if (coincidencias.length > 0) {
-      const primerPunto = coincidencias[0].geometry.coordinates;
-      map.flyTo({ center: primerPunto, zoom: 10 });
+      if (match) map.flyTo({ center: match.geometry.coordinates, zoom: 10 });
     }
   });
 });
