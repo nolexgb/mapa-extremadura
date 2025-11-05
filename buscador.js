@@ -69,10 +69,10 @@ map.on('load', async () => {
       .setLngLat(f.geometry.coordinates)
       .setHTML(
         `<strong>${p.nombre_entidad || ''}</strong><br>
-        <em>${p.tematica || ''}</em><br>
-        ${p.localidad || ''}<br>
-        ${p.telefono || ''}<br>
-        ${p.correo || ''}${web}`
+         <em>${p.tematica || ''}</em><br>
+         ${p.localidad || ''}<br>
+         ${p.telefono || ''}<br>
+         ${p.correo || ''}${web}`
       )
       .addTo(map);
   });
@@ -100,7 +100,7 @@ map.on('load', async () => {
       id: 'extremadura-fill',
       type: 'fill',
       source: 'extremadura',
-      paint: { 'fill-color': '#a3e3a3', 'fill-opacity': 0.25 }
+      paint: { 'fill-color': '#a3e3a3', 'fill-opacity': 0.18 }
     },
     'entidades-puntos'
   );
@@ -110,16 +110,14 @@ map.on('load', async () => {
       id: 'extremadura-line',
       type: 'line',
       source: 'extremadura',
-      paint: { 'line-color': '#3CB371', 'line-width': 2 }
+      paint: { 'line-color': '#3CB371', 'line-width': 1.2, 'line-opacity': 0.5 }
     },
     'entidades-puntos'
   );
 
   const bounds = new mapboxgl.LngLatBounds();
   geojson.features.forEach(f => {
-    if (f.geometry && f.geometry.coordinates && Array.isArray(f.geometry.coordinates)) {
-      bounds.extend(f.geometry.coordinates);
-    }
+    if (f.geometry && Array.isArray(f.geometry.coordinates)) bounds.extend(f.geometry.coordinates);
   });
   if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: 60, maxZoom: 9 });
 
