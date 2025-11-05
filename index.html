@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
-
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -20,7 +19,8 @@
       <div class="header-right">
         <a class="web-link" href="https://congdextremadura.org/" target="_blank" rel="noopener">congdextremadura.org</a>
         <div class="search-box-header">
-          <input id="busqueda" type="text" placeholder="🔍 Buscar entidad, localidad o temática" aria-label="Buscar entidades">
+          <input id="busqueda" type="text" placeholder="🔍 Buscar entidad, localidad o temática" aria-label="Buscar entidades" autocomplete="off">
+          <ul id="suggestions" class="suggestions" role="listbox" aria-label="Sugerencias"></ul>
         </div>
       </div>
     </div>
