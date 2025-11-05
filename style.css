@@ -1,21 +1,12 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-body {
-  background-color: #f9fafb;
-  color: #222;
-  overflow-x: hidden;
-}
+body { background-color: #f9fafb; color: #222; overflow-x: hidden; }
 
 .header {
   width: 100%;
   background-color: #fff;
   padding: 20px 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,28 +27,37 @@ body {
 
 .header-text { flex: 1; min-width: 280px; }
 
-.header-text h1 {
-  font-size: 1.6em;
-  font-weight: 700;
-  color: #009b4d;
-  margin-bottom: 5px;
-}
+.titulo { font-size: 1.6em; font-weight: 700; color: #009b4d; margin-bottom: 5px; }
 
-.header-text p { font-size: 0.95em; color: #555; }
+.subtitulo { font-size: 0.95em; color: #555; }
 
-.web-link {
-  text-decoration: none;
-  color: gray;
-  font-size: 0.9em;
-  transition: color 0.3s;
-}
-
+.web-link { text-decoration: none; color: gray; font-size: 0.9em; transition: color .3s; }
 .web-link:hover { color: #009b4d; }
 
-#map {
-  width: 100%;
-  height: calc(100vh - 160px);
+#map { width: 100%; height: calc(100vh - 160px); position: relative; }
+
+.map-controls { position: absolute; inset: 0; pointer-events: none; }
+
+.search-box {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  z-index: 20;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  pointer-events: auto;
 }
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 340px;
+}
+
+.search-box input::placeholder { color: #9aa2ab; }
 
 .category-buttons {
   position: absolute;
@@ -67,6 +67,7 @@ body {
   gap: 12px;
   z-index: 10;
   flex-wrap: wrap;
+  pointer-events: auto;
 }
 
 .category-buttons label {
@@ -75,11 +76,11 @@ body {
   gap: 8px;
   padding: 8px 12px;
   border-radius: 22px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9em;
   color: #fff;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
   user-select: none;
 }
 
@@ -87,38 +88,16 @@ body {
 
 label[data-cat="Social"] { background-color: #1E90FF; }
 label[data-cat="Ambiental"] { background-color: #3CB371; }
-label[data-cat="Económica"] { background-color: #FFD700; color:#222; }
+label[data-cat="Económica"] { background-color: #FFD700; color: #222; }
 label[data-cat="Otra"] { background-color: #BA55D3; }
-
-.search-box {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 20;
-  background: white;
-  border-radius: 12px;
-  padding: 8px 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  font-size: 0.95em;
-  width: 260px;
-}
-
-.search-box input::placeholder { color: #aaa; }
 
 @media (max-width: 768px) {
   .header-content { flex-direction: column; align-items: center; text-align: center; }
-  .header-text h1 { font-size: 1.3em; }
-  .web-link { margin-top: 6px; }
-  .search-box input { width: 180px; }
+  .titulo { font-size: 1.3em; }
+  .search-box input { width: 220px; }
   #map { height: calc(100vh - 200px); }
 }
 
 button:focus, input:focus { outline: 2px solid #009b4d; outline-offset: 2px; }
 a { color: #007b5e; text-decoration: none; }
 a:hover { text-decoration: underline; }
-
