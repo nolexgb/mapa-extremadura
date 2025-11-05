@@ -1,0 +1,879 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "DATOS",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "ASAMBLEA DE COOPERACIÓN POR LA PAZ",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.acpp.com",
+        "direccion": "Avda. Joaquín Costa 16,, 06001 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "ASOCIACIÓN DE DERECHOS HUMANOS EXTREMADURA ADHEX",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.centroderechoshumanos.com",
+        "direccion": "C/ Amberes, 5º B, 10003 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "ASOCIACIÓN EXTREMEÑA DE COMUNICACIÓN SOCIAL, AECOS",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.aecosextremadura.org",
+        "direccion": "C/ República de Brasil, 8, 4º B, 06011 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "ALIANZA POR LA SOLIDARIDAD",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.alianzaporlasolidaridad.org",
+        "direccion": "Calle La Albuera, 4, despacho 9, 06800 Mérida"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "ASOCIACIÓN DE MUJERES MALVALUNA",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.malvaluna.org",
+        "direccion": "C/ Anas, s/n, despachos 3-4, 06800 Mérida, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "AYUDA EN ACCIÓN",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.ayudaenaccion.org",
+        "direccion": "Plaza Santo Domingo 6, Entreplanta A, 06800 Mérida"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "ASOCIACIÓN LANERAS",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.asociacionlaneras.com",
+        "direccion": "Francisco Sanz López, Hervás, 10700 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "BOSCO GLOBAL",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.boscoglobal.org",
+        "direccion": "Avda. María Auxiladora, 4, 06011 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "CÁRITAS DIOCESANA MÉRIDA-BADAJOZ",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.caritasmeba.es",
+        "direccion": "C/Avda. Manuel Saavedra Martinez, 2, 3ª planta, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "CEDECCO",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": "C/ San Sisenando, 2, Oficina 1, 06002 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "Móvil: 627 207 939",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "CELIACOS DE EXTREMADURA",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.celiacosextremadura.org",
+        "direccion": "Ronda del Pilar, 10, 2ª planta, 06002 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "CESAL",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.cesal.org",
+        "direccion": "C/ Monfragüe, nº 1, 7º D, 10005 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "COLECTIVO ALTERNATIVO DE APRENDIZAJES",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.colectivocala.org",
+        "direccion": "Centro Municipal Asoc. Av. Extremadura, s/n, bajo Alburquerque, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "CONEMUND",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.conemund.org",
+        "direccion": "C/ Teresa de Calcuta, nº 13, 3º B, 06006 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "ENTRECULTURAS",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.entreculturas.org",
+        "direccion": "C/ Corte de Peleas, 79, 06009 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "EXTREMADURA ENTIENDE",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.extremaduraentiende.org",
+        "direccion": "C/ Calle Legión V, 2, 06800 Mérida, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "FARMACEUTICOS MUNDI",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.farmaceuticosmundi.org",
+        "direccion": "Padre Tomás, 2, bajo, oficina 2,  06011 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "FEDERACIÓN SÁHARA EXTREMADURA",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.federacionsaharaextremadura.org",
+        "direccion": "Padre Tomás, 2, local 5, 06011 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "FUNDACIÓN 1º DE MAYO",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.extremadura.ccoo.es",
+        "direccion": "Avda. Juan Carlos I, nº 47, 06800 Mérida, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "FUNDACIÓN ATABAL",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.fundacionatabal.org",
+        "direccion": "Plaza Cervantes, 6, 06002 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "FUNDACIÓN CIUDADANÍA",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.fundacionciudadania.es",
+        "direccion": "Capìtán Francisco de Almaraz, 30,  06800 Mérida"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "FUNDACIÓN ESPERANZA",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.fundacionesperanza.org.es",
+        "direccion": "Avda. España, 22, portal 5, 6º C"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "FUNDACIÓN MUJERES",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.fundacionmujeres.es",
+        "direccion": "Francisco Paniagua, 1, esquina Alfonso IX"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "FUNDACIÓN TRIÁNGULO",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": "C/ Vasco Núñez de Balboa, 3, 1º C. Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "FUNDHEX",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.fundhex.org",
+        "direccion": "Centro Capacidades, C/Villamesías, 3, Mérida"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "GENTINOSINA SOCIAL",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.gentinosina.com",
+        "direccion": "C/ Ronda de Coria, 2, Valdencín, 10839 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "IMPARA",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.asociacionimpara.es",
+        "direccion": "C/ Tomás Romero de Castilla, 3, 5º G, 06011 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "INSTITUTO SINDICAL DE COOPERACIÓN AL DESARROLLO",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.iscod.org",
+        "direccion": "C/La Legua, 17, 06800 Mérida, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "LIGA EXTREMEÑA EDUCACIÓN Y CULTURA POPULAR",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.ligaeducacion.org",
+        "direccion": "Avda. Virgen de la Montaña, 23, 1º, 10004 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "MANOS UNIDAS",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "Avda. Antonio Masa, 11, 06005 Badajoz",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.manosunidas.org",
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.861,
+          38.956
+        ]
+      },
+      "properties": {
+        "nombre": "MEDICUS MUNDI SUR DELEGACIÓN EXTREMADURA",
+        "ciudad": "Don Benito",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.medicusmundi.es",
+        "direccion": "C/ Molino, 4, 06400 Don Benito, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "MEDICOS DEL MUNDO",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.medicosdelmundo.org",
+        "direccion": "C/Juan Dávalos y Altamirano, 2, 06800 Mérida (BA)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "MISIÓN AMÉRICA",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.misionamerica.org",
+        "direccion": "Manuel Saavedra Martínez, 2, 06006 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "MOVIMIENTO EXTREMEÑO POR LA PAZ",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.cooperante.org",
+        "direccion": "Paseo Luis Canalejo, 3, 10739, Segura de Toro, Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "MUSOL",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.musol.org",
+        "direccion": "C/ Romero, 25, 06490 Puebla de la Calzada, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "MUJERES MIGRANTES DE EXTREMADURA",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.facebook.com/LasMigrantas/",
+        "direccion": "C/ Antonio Pacheco, 4. 06800 Mérida"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "MUJERES EN ZONA DE CONFLICTO",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.mzc.es",
+        "direccion": "C/ General Margallo, 9, bajo, 10003 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "NOVACT",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.novact.org",
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "ONGAWA",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.ongawa.org",
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "OXFAM INTERMON",
+        "ciudad": "Sevilla",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.oxfamintermon.org",
+        "direccion": "Méndez Núñez, 1, 1ª planta, oficina 6, 41001 Sevilla"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "PAISAJECO",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.asociacionpaisaje.org",
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "PAZ CON DIGNIDAD",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.pazcondignidad.org",
+        "direccion": "C/ Pizarro, 1, 2º, 10003 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "ASOCIACIÓN PAZ Y DESARROLLO",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.pazydesarrollo.org",
+        "direccion": "C/ San Pedro 8, 1º, 10004, Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "PROCLADE BÉTICA",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.procladebetica.org",
+        "direccion": "C/ Zurbarán, 1, 06200 Almendralejo, Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "PROYECTO SOLIDARIO",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.proyectosolidario.org",
+        "direccion": "C/ Antonio Machado, 32, 06490 Puebla Calzada, BA"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "RUREX, ASOCIACIÓN DE DESARROLLO",
+        "ciudad": "Zalamea de la Serena",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.asociacionrurex.com",
+        "direccion": "C/ Santa Aurelia, 25, 1º, 06430 Zalamea de la Serena"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "FUNDACIÓN ASDE-SCOUTS EXTREMADURA",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.asdeex.org",
+        "direccion": "Avda. Fernando Calzadilla, 29, bajo, 06004 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "SOLIDARIDAD, EDUCACIÓN Y DESARROLLO",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": "Avda. Juan Pereda Pila, 14, 06010 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "SINERGOS",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.sinergos.org",
+        "direccion": "Avda. Virgen de Guadalupe, 35B, 5º B, 10001 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.372,
+          39.476
+        ]
+      },
+      "properties": {
+        "nombre": "SOLIDARIDAD CON GUINEA BISSAU",
+        "ciudad": "Cáceres",
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": "C/ San Antón, 9, 3º, 10003 Cáceres"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.97,
+          38.879
+        ]
+      },
+      "properties": {
+        "nombre": "TALLER DE SOLIDARIDAD",
+        "ciudad": "Badajoz",
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": "Avda. Santa Marina, 19, 06005 Badajoz"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "nombre": "DATOS",
+        "ciudad": null,
+        "categoria": "CONGDEX",
+        "sitio_web": null,
+        "direccion": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.343,
+          38.917
+        ]
+      },
+      "properties": {
+        "nombre": "UNRWA EXTREMADURA",
+        "ciudad": "Mérida",
+        "categoria": "CONGDEX",
+        "sitio_web": "https://www.unrwa.es",
+        "direccion": "Antonio Rodríguez Moñino, s/n, 06800 Mérida"
+      }
+    }
+  ]
+}
