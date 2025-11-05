@@ -16,20 +16,23 @@
         <h1 class="titulo">Mapa de Redes y Colectivos de Extremadura</h1>
         <p class="subtitulo">Con el apoyo de la Diputación Provincial de Cáceres</p>
       </div>
-      <a class="web-link" href="https://coordinadoraextremadura.org" target="_blank" rel="noopener">coordinadoraextremadura.org</a>
+      <a class="web-link" href="https://congdextremadura.org/" target="_blank" rel="noopener">congdextremadura.org</a>
     </div>
   </header>
 
-  <div id="map" role="application" aria-label="Mapa interactivo"></div>
-
-  <div class="map-controls">
-    <div class="search-box">
+  <section class="controls">
+    <div class="search-box-static">
       <input id="busqueda" type="text" placeholder="Buscar por nombre, localidad o temática" aria-label="Buscar entidades">
     </div>
+  </section>
+
+  <main class="map-wrap">
+    <div id="map" role="application" aria-label="Mapa interactivo"></div>
     <div id="filters" class="category-buttons" aria-label="Filtros de categoría"></div>
-  </div>
+  </main>
 
   <script src="buscador.js"></script>
 </body>
 </html>
+
 
