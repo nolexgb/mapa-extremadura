@@ -25,19 +25,27 @@ window.addEventListener('load', async () => {
     return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
+  // === Popup general ===
   function openPopup(feature) {
-    const p = feature.properties;
-    const web = p.pagina_contacto && p.pagina_contacto !== 'null'
-      ? `<br><a href="${p.pagina_contacto}" target="_blank" rel="noopener">Sitio web</a>` : '';
-    new mapboxgl.Popup({ offset: 16 })
+    const p = feature.properties || {};
+    const isCongdex = p.categoria === 'CONGDEX';
+    const bgColor = isCongdex ? '#009b4d' : '#ffffff';
+    const textColor = isCongdex ? '#ffffff' : '#000000';
+    const web = p.pagina_contacto
+      ? `<br><a href="${p.pagina_contacto}" target="_blank" rel="noopener" style="color:${textColor}; text-decoration:underline;">${p.pagina_contacto}</a>`
+      : '';
+
+    const html = `
+      <div style="background-color:${bgColor}; color:${textColor}; padding:8px 12px; border-radius:8px; font-family:'Segoe UI', sans-serif; font-size:0.9rem;">
+        <strong style="font-size:1rem;">${p.nombre_entidad || ''}</strong><br>
+        <span>📍 ${p.direccion || p.localidad || ''}</span>
+        ${web}
+      </div>
+    `;
+
+    new mapboxgl.Popup({ offset: 16, closeButton: true })
       .setLngLat(feature.geometry.coordinates)
-      .setHTML(
-        `<strong>${p.nombre_entidad || ''}</strong><br>
-         <em>${p.tematica || ''}</em><br>
-         ${p.localidad || ''}<br>
-         ${p.telefono || ''}<br>
-         ${p.correo || ''}${web}`
-      )
+      .setHTML(html)
       .addTo(map);
   }
 
@@ -50,25 +58,11 @@ window.addEventListener('load', async () => {
     const geojsonEnt = await resEnt.json();
     const geojsonCong = await resCong.json();
 
-    // Limpiar duplicados
-    const unique = (arr) => {
-      const seen = new Set();
-      return arr.filter(f => {
-        const key = f.properties?.nombre_entidad?.trim().toLowerCase();
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-    };
+    entidades = geojsonEnt.features || [];
+    entidadesCongdex = geojsonCong.features || [];
 
-    entidades = unique(geojsonEnt.features || []);
-    entidadesCongdex = unique(geojsonCong.features || []).filter(f => f.properties?.categoria === 'CONGDEX');
-
-    console.log(`✅ Entidades generales: ${entidades.length}`);
-    console.log(`✅ Entidades CONGDEX: ${entidadesCongdex.length}`);
-
-    // === Capas ===
-    map.addSource('entidades', { type: 'geojson', data: { type: 'FeatureCollection', features: entidades } });
+    // === Capas principales ===
+    map.addSource('entidades', { type: 'geojson', data: geojsonEnt });
     map.addLayer({
       id: 'entidades-puntos',
       type: 'circle',
@@ -89,35 +83,36 @@ window.addEventListener('load', async () => {
       }
     });
 
-    map.addSource('congdex', { type: 'geojson', data: { type: 'FeatureCollection', features: entidadesCongdex } });
+    map.addSource('congdex', { type: 'geojson', data: geojsonCong });
     map.addLayer({
       id: 'congdex-puntos',
       type: 'circle',
       source: 'congdex',
       paint: {
         'circle-radius': 9,
-        'circle-color': '#FF7F00',
+        'circle-color': '#FF7F00', // Naranja CONGDEX
         'circle-stroke-color': '#fff',
         'circle-stroke-width': 2
       }
     });
 
-    // === Popups ===
+    // === POPUPS ===
     map.on('click', 'entidades-puntos', (e) => openPopup(e.features[0]));
     map.on('click', 'congdex-puntos', (e) => openPopup(e.features[0]));
+
     map.on('mouseenter', 'entidades-puntos', () => map.getCanvas().style.cursor = 'pointer');
     map.on('mouseenter', 'congdex-puntos', () => map.getCanvas().style.cursor = 'pointer');
     map.on('mouseleave', 'entidades-puntos', () => map.getCanvas().style.cursor = '');
     map.on('mouseleave', 'congdex-puntos', () => map.getCanvas().style.cursor = '');
 
-    // === Ajustar vista ===
+    // === Ajustar vista inicial ===
     const bounds = new mapboxgl.LngLatBounds();
     [...entidades, ...entidadesCongdex].forEach(f => {
       if (f.geometry?.coordinates) bounds.extend(f.geometry.coordinates);
     });
     if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: 60, maxZoom: 9 });
 
-    // === Categorías y conteos ===
+    // === Categorías y conteo ===
     const categorias = [...new Set(entidades.map(f => f.properties?.categoria).filter(Boolean))];
     categorias.push('CONGDEX');
     categorias.forEach(cat => categoriasActivas.add(cat));
@@ -159,7 +154,7 @@ window.addEventListener('load', async () => {
       }
     });
 
-    // === Buscador ===
+    // === BUSCADOR ===
     const input = document.getElementById('busqueda');
     const box = document.getElementById('suggestions');
     const todasEntidades = [...entidades, ...entidadesCongdex];
@@ -225,4 +220,3 @@ window.addEventListener('load', async () => {
 
   map.on('load', cargarDatos);
 });
-
