@@ -18,7 +18,7 @@ body {
 .header {
   width: 100%;
   background-color: #fff;
-  padding: 18px 40px; /* más padding lateral para mover el bloque hacia la izquierda */
+  padding: 18px 40px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -180,19 +180,12 @@ body {
   transform: scale(1.1);
 }
 
-label[data-cat="Social"] {
-  background-color: #1E90FF;
-}
-label[data-cat="Ambiental"] {
-  background-color: #3CB371;
-}
-label[data-cat="Económica"] {
-  background-color: #FFD700;
-  color: #222;
-}
-label[data-cat="Otra"] {
-  background-color: #BA55D3;
-}
+/* Colores actualizados de categorías */
+label[data-cat="Social"] { background-color: #1E90FF; }
+label[data-cat="Ambiental"] { background-color: #FF7F00; } /* NARANJA */
+label[data-cat="Económica"] { background-color: #FFD700; color: #222; }
+label[data-cat="Otra"] { background-color: #BA55D3; }
+label[data-cat="CONGDEX"] { background-color: #FF7F00; color: #fff; }
 
 /* ======= Responsive ======= */
 @media (max-width: 900px) {
