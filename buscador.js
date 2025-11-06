@@ -60,9 +60,9 @@ window.addEventListener('load', async () => {
         'circle-color': [
           'match',
           ['get', 'categoria'],
-          'Social', '#1E90FF',        // Azul
-          'Ambiental', '#FF7F00',     // Naranja
-          'Económica', '#FFD700',     // Amarillo
+          'Social', '#FFD700',        // Amarillo
+          'Ambiental', '#009b4d',     // Verde
+          'Económica', '#FF7F00',     // Naranja
           'Otra', '#BA55D3',          // Morado
           '#999'
         ],
@@ -99,9 +99,9 @@ window.addEventListener('load', async () => {
       label.dataset.cat = cat;
       const id = `cb-${cat.toLowerCase()}`;
       let bg = '#999', fg = '#fff';
-      if (cat === 'Social') bg = '#1E90FF';
-      else if (cat === 'Ambiental') bg = '#FF7F00';
-      else if (cat === 'Económica') { bg = '#FFD700'; fg = '#222'; }
+      if (cat === 'Social') bg = '#FFD700';
+      else if (cat === 'Ambiental') bg = '#009b4d';
+      else if (cat === 'Económica') { bg = '#FF7F00'; fg = '#fff'; }
       else if (cat === 'Otra') bg = '#BA55D3';
       label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat} (${total})</span>`;
       label.style.backgroundColor = bg;
