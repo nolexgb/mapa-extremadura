@@ -62,10 +62,9 @@ window.addEventListener('load', async () => {
         'circle-color': [
           'match',
           ['get', 'categoria'],
-          'Social', '#FFD700',       // Amarillo
-          'Ambiental', '#009b4d',    // Verde
-          'Económica', '#FF7F00',    // Naranja
-          'Otra', '#BA55D3',         // Morado
+          'SOCIALES', '#FFD700',      // Amarillo
+          'AMBIENTALES', '#009b4d',   // Verde
+          'ECONÓMICAS', '#FF7F00',    // Naranja
           '#999'
         ],
         'circle-stroke-color': '#fff',
@@ -101,10 +100,9 @@ window.addEventListener('load', async () => {
       label.dataset.cat = cat;
       const id = `cb-${cat.toLowerCase()}`;
       let bg = '#999', fg = '#fff';
-      if (cat === 'Social') bg = '#FFD700';
-      else if (cat === 'Ambiental') bg = '#009b4d';
-      else if (cat === 'Económica') bg = '#FF7F00';
-      else if (cat === 'Otra') bg = '#BA55D3';
+      if (cat === 'SOCIALES') bg = '#FFD700';
+      else if (cat === 'AMBIENTALES') bg = '#009b4d';
+      else if (cat === 'ECONÓMICAS') bg = '#FF7F00';
       label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat} (${total})</span>`;
       label.style.backgroundColor = bg;
       label.style.color = fg;
@@ -139,7 +137,7 @@ window.addEventListener('load', async () => {
       if (!f) return;
       input.value = f.properties.nombre_entidad || '';
       box.classList.remove('show');
-      openPopup(f); // Abre popup y hace zoom
+      openPopup(f);
     }
 
     input.addEventListener('input', (e) => renderSuggestions(e.target.value || ''));
