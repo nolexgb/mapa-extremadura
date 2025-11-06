@@ -43,6 +43,8 @@ window.addEventListener('load', async () => {
       .setLngLat(feature.geometry.coordinates)
       .setHTML(html)
       .addTo(map);
+
+    map.flyTo({ center: feature.geometry.coordinates, zoom: 12, speed: 0.8 });
   }
 
   async function cargarDatos() {
@@ -60,10 +62,10 @@ window.addEventListener('load', async () => {
         'circle-color': [
           'match',
           ['get', 'categoria'],
-          'Social', '#FFD700',        // Amarillo
-          'Ambiental', '#009b4d',     // Verde
-          'Económica', '#FF7F00',     // Naranja
-          'Otra', '#BA55D3',          // Morado
+          'Social', '#FFD700',       // Amarillo
+          'Ambiental', '#009b4d',    // Verde
+          'Económica', '#FF7F00',    // Naranja
+          'Otra', '#BA55D3',         // Morado
           '#999'
         ],
         'circle-stroke-color': '#fff',
@@ -101,7 +103,7 @@ window.addEventListener('load', async () => {
       let bg = '#999', fg = '#fff';
       if (cat === 'Social') bg = '#FFD700';
       else if (cat === 'Ambiental') bg = '#009b4d';
-      else if (cat === 'Económica') { bg = '#FF7F00'; fg = '#fff'; }
+      else if (cat === 'Económica') bg = '#FF7F00';
       else if (cat === 'Otra') bg = '#BA55D3';
       label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat} (${total})</span>`;
       label.style.backgroundColor = bg;
@@ -137,8 +139,7 @@ window.addEventListener('load', async () => {
       if (!f) return;
       input.value = f.properties.nombre_entidad || '';
       box.classList.remove('show');
-      map.flyTo({ center: f.geometry.coordinates, zoom: 10 });
-      openPopup(f);
+      openPopup(f); // Abre popup y hace zoom
     }
 
     input.addEventListener('input', (e) => renderSuggestions(e.target.value || ''));
