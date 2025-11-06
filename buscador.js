@@ -8,19 +8,29 @@ window.addEventListener('load', async () => {
     zoom: 7
   });
 
-  let categoriasActivas = new Set();
   let entidades = [];
+  let categoriasActivas = new Set();
   let activeIndex = -1;
+
+  const ORDER = ['SOCIALES', 'AMBIENTALES', 'ECONÓMICAS'];
+  const COLORS = {
+    'SOCIALES': '#FFD700',
+    'AMBIENTALES': '#009b4d',
+    'ECONÓMICAS': '#FF7F00'
+  };
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
 
   function norm(s) {
     return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   function aplicarFiltro() {
-    const filtroCategorias = categoriasActivas.size
+    const filtro = categoriasActivas.size
       ? ['in', ['get', 'categoria'], ['literal', Array.from(categoriasActivas)]]
       : true;
-    if (map.getLayer('entidades-puntos')) map.setFilter('entidades-puntos', filtroCategorias);
+    if (map.getLayer('entidades-puntos')) map.setFilter('entidades-puntos', filtro);
   }
 
   function openPopup(feature) {
@@ -28,31 +38,29 @@ window.addEventListener('load', async () => {
     const web = p.pagina_contacto
       ? `<a href="${p.pagina_contacto}" target="_blank" rel="noopener" style="color:#009b4d;text-decoration:underline;">${p.pagina_contacto}</a>`
       : 'No disponible';
-
     const html = `
       <div style="font-family:'Segoe UI',sans-serif;line-height:1.5;">
-        <strong style="font-size:1rem;color:#009b4d;">${p.nombre_entidad || 'Sin nombre'}</strong><br>
-        <b>Categoría:</b> ${p.categoria || 'Sin categoría'}<br>
+        <strong style="font-size:1rem;color:#009b4d;">${p.nombre_entidad || ''}</strong><br>
+        <b>Categoría:</b> ${p.categoria || ''}<br>
         <b>Dirección:</b> ${p.direccion || 'No disponible'}<br>
         <b>Localidad:</b> ${p.localidad || 'No disponible'}<br>
         <b>Sitio web:</b> ${web}<br>
         <b>Temáticas:</b> ${p.tematica || 'No especificadas'}
       </div>`;
-
     new mapboxgl.Popup({ offset: 16 })
       .setLngLat(feature.geometry.coordinates)
       .setHTML(html)
       .addTo(map);
-
     map.flyTo({ center: feature.geometry.coordinates, zoom: 12, speed: 0.8 });
   }
 
   async function cargarDatos() {
     const res = await fetch('entidades.geojson', { cache: 'no-store' });
     const geojson = await res.json();
-    entidades = geojson.features || [];
+    entidades = (geojson.features || []).filter(f => ORDER.includes((f.properties?.categoria || '').toUpperCase()));
 
-    map.addSource('entidades', { type: 'geojson', data: geojson });
+    map.addSource('entidades', { type: 'geojson', data: { type: 'FeatureCollection', features: entidades } });
+
     map.addLayer({
       id: 'entidades-puntos',
       type: 'circle',
@@ -62,9 +70,9 @@ window.addEventListener('load', async () => {
         'circle-color': [
           'match',
           ['get', 'categoria'],
-          'SOCIALES', '#FFD700',      // Amarillo
-          'AMBIENTALES', '#009b4d',   // Verde
-          'ECONÓMICAS', '#FF7F00',    // Naranja
+          'SOCIALES', COLORS['SOCIALES'],
+          'AMBIENTALES', COLORS['AMBIENTALES'],
+          'ECONÓMICAS', COLORS['ECONÓMICAS'],
           '#999'
         ],
         'circle-stroke-color': '#fff',
@@ -77,35 +85,22 @@ window.addEventListener('load', async () => {
     map.on('mouseleave', 'entidades-puntos', () => map.getCanvas().style.cursor = '');
 
     const bounds = new mapboxgl.LngLatBounds();
-    entidades.forEach(f => {
-      if (f.geometry?.coordinates) bounds.extend(f.geometry.coordinates);
-    });
+    entidades.forEach(f => f.geometry?.coordinates && bounds.extend(f.geometry.coordinates));
     if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: 60, maxZoom: 9 });
 
-    const categorias = [...new Set(entidades.map(f => f.properties?.categoria).filter(Boolean))];
-    categorias.forEach(c => categoriasActivas.add(c));
+    const counts = ORDER.reduce((acc, k) => (acc[k] = 0, acc), {});
+    entidades.forEach(f => { const c = (f.properties?.categoria || '').toUpperCase(); if (counts[c] !== undefined) counts[c]++; });
 
-    const counts = {};
-    entidades.forEach(f => {
-      const c = f.properties?.categoria;
-      if (!c) return;
-      counts[c] = (counts[c] || 0) + 1;
-    });
-
-    const cont = document.getElementById('filters');
+    const cont = $('#filters');
     cont.innerHTML = '';
-    categorias.forEach(cat => {
-      const total = counts[cat] || 0;
+    ORDER.forEach(cat => {
+      categoriasActivas.add(cat);
       const label = document.createElement('label');
       label.dataset.cat = cat;
       const id = `cb-${cat.toLowerCase()}`;
-      let bg = '#999', fg = '#fff';
-      if (cat === 'SOCIALES') bg = '#FFD700';
-      else if (cat === 'AMBIENTALES') bg = '#009b4d';
-      else if (cat === 'ECONÓMICAS') bg = '#FF7F00';
-      label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat} (${total})</span>`;
-      label.style.backgroundColor = bg;
-      label.style.color = fg;
+      label.innerHTML = `<input type="checkbox" id="${id}" value="${cat}" checked><span>${cat} (${counts[cat] || 0})</span>`;
+      label.style.backgroundColor = COLORS[cat];
+      label.style.color = '#fff';
       cont.appendChild(label);
     });
 
@@ -118,16 +113,17 @@ window.addEventListener('load', async () => {
       }
     });
 
-    const input = document.getElementById('busqueda');
-    const box = document.getElementById('suggestions');
+    const input = $('#busqueda');
+    const box = $('#suggestions');
 
     function renderSuggestions(q) {
       if (!q) { box.classList.remove('show'); box.innerHTML = ''; activeIndex = -1; return; }
       const nq = norm(q);
-      const results = entidades.filter(f => norm(f.properties?.nombre_entidad || '').includes(nq)).slice(0, 15);
+      const results = entidades
+        .filter(f => norm(f.properties?.nombre_entidad || '').includes(nq))
+        .slice(0, 15);
       if (!results.length) { box.classList.remove('show'); box.innerHTML = ''; activeIndex = -1; return; }
-      const list = results.map((f, i) => `<li role="option" data-i="${i}">${f.properties.nombre_entidad}</li>`).join('');
-      box.innerHTML = list;
+      box.innerHTML = results.map((f, i) => `<li role="option" data-i="${i}">${f.properties.nombre_entidad}</li>`).join('');
       box.classList.add('show');
       activeIndex = -1;
     }
@@ -156,16 +152,13 @@ window.addEventListener('load', async () => {
       const items = box.querySelectorAll('li');
       if (!items.length) return;
       if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        activeIndex = (activeIndex + 1) % items.length;
+        e.preventDefault(); activeIndex = (activeIndex + 1) % items.length;
         items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
       } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        activeIndex = (activeIndex - 1 + items.length) % items.length;
+        e.preventDefault(); activeIndex = (activeIndex - 1 + items.length) % items.length;
         items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
       } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (activeIndex >= 0) selectEntity(activeIndex, pool);
+        e.preventDefault(); if (activeIndex >= 0) selectEntity(activeIndex, pool);
         box.classList.remove('show');
       } else if (e.key === 'Escape') {
         box.classList.remove('show'); activeIndex = -1;
@@ -173,9 +166,7 @@ window.addEventListener('load', async () => {
     });
 
     document.addEventListener('click', (e) => {
-      if (!document.querySelector('.search-box-header').contains(e.target)) {
-        box.classList.remove('show'); activeIndex = -1;
-      }
+      if (!$('.search-box-header').contains(e.target)) { box.classList.remove('show'); activeIndex = -1; }
     });
   }
 
