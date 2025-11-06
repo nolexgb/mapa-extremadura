@@ -26,12 +26,19 @@ window.addEventListener('load', async () => {
   function openPopup(feature) {
     const p = feature.properties || {};
     const web = p.pagina_contacto
-      ? `<br><a href="${p.pagina_contacto}" target="_blank" rel="noopener">Sitio web</a>` : '';
+      ? `<a href="${p.pagina_contacto}" target="_blank" rel="noopener" style="color:#009b4d;text-decoration:underline;">${p.pagina_contacto}</a>`
+      : 'No disponible';
+
     const html = `
-      <strong>${p.nombre_entidad || ''}</strong><br>
-      <em>${p.tematica || ''}</em><br>
-      ${p.localidad || ''}<br>
-      ${p.correo || ''}${web}`;
+      <div style="font-family:'Segoe UI',sans-serif;line-height:1.5;">
+        <strong style="font-size:1rem;color:#009b4d;">${p.nombre_entidad || 'Sin nombre'}</strong><br>
+        <b>Categoría:</b> ${p.categoria || 'Sin categoría'}<br>
+        <b>Dirección:</b> ${p.direccion || 'No disponible'}<br>
+        <b>Localidad:</b> ${p.localidad || 'No disponible'}<br>
+        <b>Sitio web:</b> ${web}<br>
+        <b>Temáticas:</b> ${p.tematica || 'No especificadas'}
+      </div>`;
+
     new mapboxgl.Popup({ offset: 16 })
       .setLngLat(feature.geometry.coordinates)
       .setHTML(html)
@@ -53,10 +60,10 @@ window.addEventListener('load', async () => {
         'circle-color': [
           'match',
           ['get', 'categoria'],
-          'Social', '#1E90FF',
-          'Ambiental', '#FF7F00',
-          'Económica', '#FFD700',
-          'Otra', '#BA55D3',
+          'Social', '#1E90FF',        // Azul
+          'Ambiental', '#FF7F00',     // Naranja
+          'Económica', '#FFD700',     // Amarillo
+          'Otra', '#BA55D3',          // Morado
           '#999'
         ],
         'circle-stroke-color': '#fff',
