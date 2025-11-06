@@ -14,7 +14,6 @@ body {
   min-height: 100vh;
 }
 
-/* ======= Header ======= */
 .header {
   width: 100%;
   background-color: #fff;
@@ -33,7 +32,6 @@ body {
   column-gap: 24px;
 }
 
-/* ======= Logos ======= */
 .logos {
   display: flex;
   align-items: center;
@@ -46,7 +44,6 @@ body {
   width: auto;
 }
 
-/* ======= Título y subtítulo ======= */
 .header-text {
   text-align: center;
 }
@@ -63,7 +60,6 @@ body {
   color: #555;
 }
 
-/* ======= Right section (link + buscador) ======= */
 .header-right {
   display: flex;
   flex-direction: column;
@@ -83,7 +79,6 @@ body {
   color: #009b4d;
 }
 
-/* ======= Buscador ======= */
 .search-box-header {
   position: relative;
 }
@@ -106,7 +101,6 @@ body {
   color: #9aa2ab;
 }
 
-/* ======= Autocompletado ======= */
 .suggestions {
   list-style: none;
   position: absolute;
@@ -138,7 +132,6 @@ body {
   font-weight: 600;
 }
 
-/* ======= Mapa ======= */
 .map-wrap {
   position: relative;
   flex: 1 1 auto;
@@ -150,7 +143,6 @@ body {
   min-height: 500px;
 }
 
-/* ======= Categorías ======= */
 .category-buttons {
   position: absolute;
   bottom: 18px;
@@ -180,14 +172,11 @@ body {
   transform: scale(1.1);
 }
 
-/* Colores actualizados de categorías */
 label[data-cat="Social"] { background-color: #1E90FF; }
-label[data-cat="Ambiental"] { background-color: #FF7F00; } /* NARANJA */
+label[data-cat="Ambiental"] { background-color: #FF7F00; }
 label[data-cat="Económica"] { background-color: #FFD700; color: #222; }
 label[data-cat="Otra"] { background-color: #BA55D3; }
-label[data-cat="CONGDEX"] { background-color: #FF7F00; color: #fff; }
 
-/* ======= Responsive ======= */
 @media (max-width: 900px) {
   .header-content {
     grid-template-columns: 1fr;
