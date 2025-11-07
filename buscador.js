@@ -1,175 +1,115 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoibW1pbGFjIiwiYSI6ImNpeWhkNXZsMDA1ZDgzMm4wdWRzdzRleWcifQ.crLVL3iFWYSbE5zrlkIA7w';
 
-window.addEventListener('load', async () => {
-  const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
-    center: [-6.4, 39.3],
-    zoom: 7
-  });
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/light-v11',
+  center: [-6.338, 39.37],
+  zoom: 7
+});
 
-  const COLORS = {
-    'SOCIALES': '#FFD700',
-    'AMBIENTALES': '#009b4d',
-    'ECONÓMICAS': '#FF7F00'
-  };
+const categorias = {
+  SOCIALES: '#FFD700',
+  AMBIENTALES: '#009b4d',
+  ECONÓMICAS: '#FF7F00'
+};
 
-  let entidades = [];
-  let categoriasActivas = new Set(['SOCIALES', 'AMBIENTALES', 'ECONÓMICAS']);
-  let activeIndex = -1;
+const popupOffset = 20;
 
-  const $ = (s) => document.querySelector(s);
+fetch('entidades.geojson')
+  .then(response => response.json())
+  .then(data => {
+    const features = data.features;
+    const categoryCounts = {};
 
-  function normalize(t) {
-    return (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  }
+    for (const cat in categorias) categoryCounts[cat] = 0;
 
-  function openPopup(feature) {
-    const p = feature.properties;
-    const web = p.pagina_contacto
-      ? `<a href="${p.pagina_contacto}" target="_blank" style="color:#009b4d;text-decoration:underline;">Sitio web</a>`
-      : 'No disponible';
-
-    const html = `
-      <div style="font-family:'Segoe UI',sans-serif;line-height:1.8;font-size:0.95rem;min-width:250px;max-width:320px;">
-        <div style="font-size:1.2rem;font-weight:700;color:#009b4d;margin-bottom:8px;">
-          ${p.nombre_entidad || ''}
-        </div>
-        <div style="margin-bottom:4px;"><b>Categoría:</b> ${p.categoria || ''}</div>
-        <div style="margin-bottom:4px;"><b>Dirección:</b> ${p.direccion || 'No disponible'}</div>
-        <div style="margin-bottom:4px;"><b>Localidad:</b> ${p.localidad || 'No disponible'}</div>
-        <div style="margin-bottom:4px;"><b>${web}</b></div>
-        <div><b>Temáticas:</b> ${p.tematica || 'No especificadas'}</div>
-      </div>`;
-
-    new mapboxgl.Popup({ offset: 20, maxWidth: '360px' })
-      .setLngLat(feature.geometry.coordinates)
-      .setHTML(html)
-      .addTo(map);
-
-    map.flyTo({ center: feature.geometry.coordinates, zoom: 12, speed: 0.8 });
-  }
-
-  async function cargarDatos() {
-    const res = await fetch('entidades.geojson', { cache: 'no-store' });
-    const geojson = await res.json();
-
-    entidades = geojson.features.filter(f =>
-      ['SOCIALES', 'AMBIENTALES', 'ECONÓMICAS'].includes(f.properties.categoria.toUpperCase())
-    );
-
-    map.addSource('entidades', { type: 'geojson', data: geojson });
-    map.addLayer({
-      id: 'entidades-puntos',
-      type: 'circle',
-      source: 'entidades',
-      paint: {
-        'circle-radius': 7,
-        'circle-color': [
-          'match',
-          ['get', 'categoria'],
-          'SOCIALES', COLORS.SOCIALES,
-          'AMBIENTALES', COLORS.AMBIENTALES,
-          'ECONÓMICAS', COLORS.ECONÓMICAS,
-          '#999'
-        ],
-        'circle-stroke-color': '#fff',
-        'circle-stroke-width': 1.5
+    features.forEach(f => {
+      if (f.properties.CATEGORIA && categoryCounts[f.properties.CATEGORIA] !== undefined) {
+        categoryCounts[f.properties.CATEGORIA]++;
       }
     });
 
-    map.on('click', 'entidades-puntos', e => openPopup(e.features[0]));
-    map.on('mouseenter', 'entidades-puntos', () => map.getCanvas().style.cursor = 'pointer');
-    map.on('mouseleave', 'entidades-puntos', () => map.getCanvas().style.cursor = '');
+    features.forEach(feature => {
+      const { NOMBRE, CATEGORIA, DIRECCION, LOCALIDAD, SITIO_WEB, TEMATICAS } = feature.properties;
+      const color = categorias[CATEGORIA] || '#999';
 
-    const bounds = new mapboxgl.LngLatBounds();
-    entidades.forEach(f => f.geometry?.coordinates && bounds.extend(f.geometry.coordinates));
-    if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: 60, maxZoom: 9 });
+      const marker = new mapboxgl.Marker({ color })
+        .setLngLat(feature.geometry.coordinates)
+        .addTo(map);
 
-    const counts = { SOCIALES: 89, AMBIENTALES: 22, ECONÓMICAS: 14 };
-    const cont = $('#filters');
-    cont.innerHTML = '';
-    Object.keys(counts).forEach(cat => {
+      const popupHTML = `
+        <div style="min-width:250px;max-width:280px;padding:6px 10px;line-height:1.6;">
+          <h3 style="font-size:1.1rem;color:#009b4d;margin-bottom:6px;">${NOMBRE}</h3>
+          <p><strong>Categoría:</strong> ${CATEGORIA}</p>
+          <p><strong>Dirección:</strong> ${DIRECCION}</p>
+          <p><strong>Localidad:</strong> ${LOCALIDAD}</p>
+          <p><strong>Sitio web:</strong> <a href="${SITIO_WEB}" target="_blank">Sitio web</a></p>
+          <p><strong>Temáticas:</strong> ${TEMATICAS}</p>
+        </div>`;
+
+      const popup = new mapboxgl.Popup({
+        offset: popupOffset,
+        closeButton: true,
+        closeOnClick: true
+      }).setHTML(popupHTML);
+
+      marker.getElement().addEventListener('click', () => {
+        map.flyTo({ center: feature.geometry.coordinates, zoom: 12 });
+        popup.addTo(map);
+      });
+    });
+
+    const filtersDiv = document.getElementById('filters');
+    for (const cat in categorias) {
       const label = document.createElement('label');
       label.dataset.cat = cat;
-      label.innerHTML = `<input type="checkbox" value="${cat}" checked><span>${cat} (${counts[cat]})</span>`;
-      label.style.backgroundColor = COLORS[cat];
-      label.style.color = '#fff';
-      cont.appendChild(label);
-    });
-
-    cont.addEventListener('change', e => {
-      if (e.target?.type === 'checkbox') {
-        const { value, checked } = e.target;
-        if (checked) categoriasActivas.add(value);
-        else categoriasActivas.delete(value);
-        const filtro = categoriasActivas.size
-          ? ['in', ['get', 'categoria'], ['literal', Array.from(categoriasActivas)]]
-          : true;
-        if (map.getLayer('entidades-puntos')) map.setFilter('entidades-puntos', filtro);
-      }
-    });
-
-    const input = $('#busqueda');
-    const box = $('#suggestions');
-
-    function renderSuggestions(q) {
-      if (!q) { box.classList.remove('show'); box.innerHTML = ''; activeIndex = -1; return; }
-      const nq = normalize(q);
-      const results = entidades.filter(f => normalize(f.properties.nombre_entidad).includes(nq)).slice(0, 15);
-      if (!results.length) { box.classList.remove('show'); box.innerHTML = ''; activeIndex = -1; return; }
-      box.innerHTML = results.map((f, i) => `<li data-i="${i}">${f.properties.nombre_entidad}</li>`).join('');
-      box.classList.add('show');
-      activeIndex = -1;
+      label.innerHTML = `<input type="checkbox" checked data-cat="${cat}" /> ${cat} (${categoryCounts[cat]})`;
+      filtersDiv.appendChild(label);
     }
 
-    function selectEntity(index, pool) {
-      const f = pool[index];
-      if (!f) return;
-      input.value = f.properties.nombre_entidad;
-      box.classList.remove('show');
-      openPopup(f);
-    }
-
-    input.addEventListener('input', e => renderSuggestions(e.target.value));
-    box.addEventListener('click', e => {
-      const li = e.target.closest('li');
-      if (!li) return;
-      const q = normalize(input.value);
-      const pool = entidades.filter(f => normalize(f.properties.nombre_entidad).includes(q)).slice(0, 15);
-      selectEntity(parseInt(li.dataset.i), pool);
+    document.querySelectorAll('#filters input').forEach(input => {
+      input.addEventListener('change', e => {
+        const cat = e.target.dataset.cat;
+        const visible = e.target.checked;
+        map.setLayoutProperty(cat, 'visibility', visible ? 'visible' : 'none');
+      });
     });
 
-    input.addEventListener('keydown', e => {
-      const q = normalize(input.value);
-      const pool = entidades.filter(f => normalize(f.properties.nombre_entidad).includes(q)).slice(0, 15);
-      const items = box.querySelectorAll('li');
-      if (!items.length) return;
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        activeIndex = (activeIndex + 1) % items.length;
-        items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        activeIndex = (activeIndex - 1 + items.length) % items.length;
-        items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (activeIndex >= 0) selectEntity(activeIndex, pool);
-        box.classList.remove('show');
-      } else if (e.key === 'Escape') {
-        box.classList.remove('show');
-        activeIndex = -1;
+    const searchInput = document.getElementById('busqueda');
+    const suggestionsList = document.getElementById('suggestions');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      suggestionsList.innerHTML = '';
+      if (!query) {
+        suggestionsList.classList.remove('show');
+        return;
       }
+      const matches = features.filter(f => f.properties.NOMBRE.toLowerCase().includes(query));
+      matches.forEach(f => {
+        const li = document.createElement('li');
+        li.textContent = f.properties.NOMBRE;
+        li.addEventListener('click', () => {
+          map.flyTo({ center: f.geometry.coordinates, zoom: 12 });
+          new mapboxgl.Popup()
+            .setLngLat(f.geometry.coordinates)
+            .setHTML(`
+              <div style="min-width:250px;max-width:280px;padding:6px 10px;line-height:1.6;">
+                <h3 style="font-size:1.1rem;color:#009b4d;margin-bottom:6px;">${f.properties.NOMBRE}</h3>
+                <p><strong>Categoría:</strong> ${f.properties.CATEGORIA}</p>
+                <p><strong>Dirección:</strong> ${f.properties.DIRECCION}</p>
+                <p><strong>Localidad:</strong> ${f.properties.LOCALIDAD}</p>
+                <p><strong>Sitio web:</strong> <a href="${f.properties.SITIO_WEB}" target="_blank">Sitio web</a></p>
+                <p><strong>Temáticas:</strong> ${f.properties.TEMATICAS}</p>
+              </div>
+            `)
+            .addTo(map);
+          suggestionsList.classList.remove('show');
+          searchInput.value = f.properties.NOMBRE;
+        });
+        suggestionsList.appendChild(li);
+      });
+      suggestionsList.classList.add('show');
     });
-
-    document.addEventListener('click', e => {
-      if (!document.querySelector('.search-box-header').contains(e.target)) {
-        box.classList.remove('show');
-        activeIndex = -1;
-      }
-    });
-  }
-
-  map.on('load', cargarDatos);
-});
+  })
+  .catch(err => console.error('Error al cargar entidades.geojson:', err));
