@@ -9,9 +9,9 @@ window.addEventListener('load', async () => {
   });
 
   const COLORS = {
-    'SOCIALES': '#FFD700',     // Amarillo
-    'AMBIENTALES': '#009b4d',  // Verde
-    'ECONÓMICAS': '#FF7F00'    // Naranja
+    'SOCIALES': '#FFD700',
+    'AMBIENTALES': '#009b4d',
+    'ECONÓMICAS': '#FF7F00'
   };
 
   let entidades = [];
@@ -20,27 +20,29 @@ window.addEventListener('load', async () => {
 
   const $ = (s) => document.querySelector(s);
 
-  function normalize(text) {
-    return (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  function normalize(t) {
+    return (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   function openPopup(feature) {
     const p = feature.properties;
     const web = p.pagina_contacto
-      ? `<a href="${p.pagina_contacto}" target="_blank" style="color:#009b4d;text-decoration:underline;">${p.pagina_contacto}</a>`
+      ? `<a href="${p.pagina_contacto}" target="_blank" style="color:#009b4d;text-decoration:underline;">Sitio web</a>`
       : 'No disponible';
 
     const html = `
-      <div style="font-family:'Segoe UI',sans-serif;line-height:1.5;">
-        <strong style="font-size:1rem;color:#009b4d;">${p.nombre_entidad}</strong><br>
-        <b>Categoría:</b> ${p.categoria}<br>
-        <b>Dirección:</b> ${p.direccion || 'No disponible'}<br>
-        <b>Localidad:</b> ${p.localidad || 'No disponible'}<br>
-        <b>Sitio web:</b> ${web}<br>
-        <b>Temáticas:</b> ${p.tematica || 'No especificadas'}
+      <div style="font-family:'Segoe UI',sans-serif;line-height:1.8;font-size:0.95rem;min-width:250px;max-width:320px;">
+        <div style="font-size:1.2rem;font-weight:700;color:#009b4d;margin-bottom:8px;">
+          ${p.nombre_entidad || ''}
+        </div>
+        <div style="margin-bottom:4px;"><b>Categoría:</b> ${p.categoria || ''}</div>
+        <div style="margin-bottom:4px;"><b>Dirección:</b> ${p.direccion || 'No disponible'}</div>
+        <div style="margin-bottom:4px;"><b>Localidad:</b> ${p.localidad || 'No disponible'}</div>
+        <div style="margin-bottom:4px;"><b>${web}</b></div>
+        <div><b>Temáticas:</b> ${p.tematica || 'No especificadas'}</div>
       </div>`;
 
-    new mapboxgl.Popup({ offset: 16 })
+    new mapboxgl.Popup({ offset: 20, maxWidth: '360px' })
       .setLngLat(feature.geometry.coordinates)
       .setHTML(html)
       .addTo(map);
