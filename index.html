@@ -4,16 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
-  <link rel="preconnect" href="https://api.mapbox.com">
-  <link rel="preconnect" href="https://events.mapbox.com">
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css" rel="stylesheet" />
-  <link href="style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="header">
     <div class="header-content">
       <div class="logos">
-        <img src="logo-diputacion-de-caceres-1.png" alt="Diputación de Cáceres" class="logo" />
+        <img src="caceres.png" alt="Diputación de Cáceres" class="logo" />
         <img src="logo_congdex.jpeg" alt="CONGDEX" class="logo" />
       </div>
       <div class="header-text">
@@ -39,7 +37,10 @@
     </button>
   </main>
 
+  <!-- Primero el script de Mapbox -->
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
+
+  <!-- Luego el script del mapa -->
   <script src="buscador.js"></script>
 </body>
 </html>
