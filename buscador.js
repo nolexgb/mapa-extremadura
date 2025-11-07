@@ -24,6 +24,14 @@ fetch('entidades.geojson')
       if (categoryCounts[cat] !== undefined) categoryCounts[cat]++;
     });
 
+    const filtersDiv = document.getElementById('filters');
+    for (const cat in categorias) {
+      const label = document.createElement('label');
+      label.dataset.cat = cat;
+      label.innerHTML = `<input type="checkbox" checked data-cat="${cat}" /> ${cat} (${categoryCounts[cat]})`;
+      filtersDiv.appendChild(label);
+    }
+
     features.forEach(feature => {
       const { NOMBRE, CATEGORIA, DIRECCION, LOCALIDAD, SITIO_WEB, TEMATICAS } = feature.properties;
       const color = categorias[CATEGORIA] || '#999';
@@ -49,14 +57,6 @@ fetch('entidades.geojson')
         popup.addTo(map);
       });
     });
-
-    const filtersDiv = document.getElementById('filters');
-    for (const cat in categorias) {
-      const label = document.createElement('label');
-      label.dataset.cat = cat;
-      label.innerHTML = `<input type="checkbox" checked data-cat="${cat}" /> ${cat} (${categoryCounts[cat]})`;
-      filtersDiv.appendChild(label);
-    }
 
     const searchInput = document.getElementById('busqueda');
     const suggestionsList = document.getElementById('suggestions');
