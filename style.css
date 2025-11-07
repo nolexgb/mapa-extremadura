@@ -37,3 +37,24 @@ label[data-cat="ECONÓMICAS"]{background-color:#FF7F00}
 button:focus,input:focus{outline:2px solid #009b4d;outline-offset:2px}
 a{color:#007b5e;text-decoration:none}
 a:hover{text-decoration:underline}
+
+.informe-btn {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  background-color: #009b4d;
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
+  z-index: 20;
+}
+
+.informe-btn:hover {
+  background-color: #007f3a;
+}
