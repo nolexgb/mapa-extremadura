@@ -3,7 +3,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibW1pbGFjIiwiYSI6ImNpeWhkNXZsMDA1ZDgzMm4wdWRzd
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/light-v11',
-  center: [-6.338, 39.37],
+  center: [-6.38, 39.39],
   zoom: 7
 });
 
@@ -13,20 +13,15 @@ const categorias = {
   ECONÓMICAS: '#FF7F00'
 };
 
-const popupOffset = 20;
-
 fetch('entidades.geojson')
   .then(response => response.json())
   .then(data => {
     const features = data.features;
-    const categoryCounts = {};
-
-    for (const cat in categorias) categoryCounts[cat] = 0;
+    const categoryCounts = { SOCIALES: 0, AMBIENTALES: 0, ECONÓMICAS: 0 };
 
     features.forEach(f => {
-      if (f.properties.CATEGORIA && categoryCounts[f.properties.CATEGORIA] !== undefined) {
-        categoryCounts[f.properties.CATEGORIA]++;
-      }
+      const cat = f.properties.CATEGORIA;
+      if (categoryCounts[cat] !== undefined) categoryCounts[cat]++;
     });
 
     features.forEach(feature => {
@@ -38,8 +33,8 @@ fetch('entidades.geojson')
         .addTo(map);
 
       const popupHTML = `
-        <div style="min-width:250px;max-width:280px;padding:6px 10px;line-height:1.6;">
-          <h3 style="font-size:1.1rem;color:#009b4d;margin-bottom:6px;">${NOMBRE}</h3>
+        <div>
+          <h3>${NOMBRE}</h3>
           <p><strong>Categoría:</strong> ${CATEGORIA}</p>
           <p><strong>Dirección:</strong> ${DIRECCION}</p>
           <p><strong>Localidad:</strong> ${LOCALIDAD}</p>
@@ -47,11 +42,7 @@ fetch('entidades.geojson')
           <p><strong>Temáticas:</strong> ${TEMATICAS}</p>
         </div>`;
 
-      const popup = new mapboxgl.Popup({
-        offset: popupOffset,
-        closeButton: true,
-        closeOnClick: true
-      }).setHTML(popupHTML);
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupHTML);
 
       marker.getElement().addEventListener('click', () => {
         map.flyTo({ center: feature.geometry.coordinates, zoom: 12 });
@@ -66,14 +57,6 @@ fetch('entidades.geojson')
       label.innerHTML = `<input type="checkbox" checked data-cat="${cat}" /> ${cat} (${categoryCounts[cat]})`;
       filtersDiv.appendChild(label);
     }
-
-    document.querySelectorAll('#filters input').forEach(input => {
-      input.addEventListener('change', e => {
-        const cat = e.target.dataset.cat;
-        const visible = e.target.checked;
-        map.setLayoutProperty(cat, 'visibility', visible ? 'visible' : 'none');
-      });
-    });
 
     const searchInput = document.getElementById('busqueda');
     const suggestionsList = document.getElementById('suggestions');
@@ -94,8 +77,8 @@ fetch('entidades.geojson')
           new mapboxgl.Popup()
             .setLngLat(f.geometry.coordinates)
             .setHTML(`
-              <div style="min-width:250px;max-width:280px;padding:6px 10px;line-height:1.6;">
-                <h3 style="font-size:1.1rem;color:#009b4d;margin-bottom:6px;">${f.properties.NOMBRE}</h3>
+              <div>
+                <h3>${f.properties.NOMBRE}</h3>
                 <p><strong>Categoría:</strong> ${f.properties.CATEGORIA}</p>
                 <p><strong>Dirección:</strong> ${f.properties.DIRECCION}</p>
                 <p><strong>Localidad:</strong> ${f.properties.LOCALIDAD}</p>
@@ -113,3 +96,4 @@ fetch('entidades.geojson')
     });
   })
   .catch(err => console.error('Error al cargar entidades.geojson:', err));
+
