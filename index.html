@@ -4,31 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
-
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="style.css" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css" rel="stylesheet" />
 </head>
-  <button class="informe-btn" onclick="window.open('URL_DEL_INFORME','_blank')">
-  Accede al informe Mapeo de redes y colectivos de Extremadura elaborado por El Ojo Sostenible
-</button>
-
 <body>
   <header class="header">
     <div class="header-content">
       <div class="logos">
-        <img class="logo" src="caceres.png" alt="Diputación de Cáceres">
-        <img class="logo" src="logo_congdex.jpeg" alt="CONGDEX">
+        <img src="logo-diputacion-de-caceres-1.png" alt="Diputación de Cáceres" class="logo" />
+        <img src="logo_congdex.jpeg" alt="CONGDEX" class="logo" />
       </div>
       <div class="header-text">
         <h1 class="titulo">Mapa de Redes y Colectivos de Extremadura</h1>
         <p class="subtitulo">Con el apoyo de la Diputación Provincial de Cáceres</p>
       </div>
       <div class="header-right">
-        <a class="web-link" href="https://congdextremadura.org/" target="_blank" rel="noopener">congdextremadura.org</a>
+        <a href="https://congdextremadura.org" target="_blank" class="web-link">congdextremadura.org</a>
         <div class="search-box-header">
-          <input id="busqueda" type="text" placeholder="🔍 Buscar entidad" aria-label="Buscar entidades" autocomplete="off" />
-          <ul id="suggestions" class="suggestions" role="listbox"></ul>
+          <input id="busqueda" type="text" placeholder="Buscar entidad" autocomplete="off" />
+          <ul id="suggestions" class="suggestions"></ul>
         </div>
       </div>
     </div>
@@ -37,8 +31,12 @@
   <main class="map-wrap">
     <div id="map"></div>
     <div id="filters" class="category-buttons"></div>
+    <button class="informe-btn" onclick="window.open('URL_DEL_INFORME','_blank')">
+      Accede al informe Mapeo de redes y colectivos de Extremadura elaborado por El Ojo Sostenible
+    </button>
   </main>
 
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
   <script src="buscador.js"></script>
 </body>
 </html>
