@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
-  <link href="https://cdn.jsdelivr.net/npm/mapbox-gl@2.16.1/dist/mapbox-gl.css" rel="stylesheet">
+
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -29,15 +30,16 @@
   </header>
 
   <main class="map-wrap">
-    <div id="map"></div>
+    <div id="map">
+      <div id="loader">Cargando mapa...</div>
+    </div>
     <div id="filters" class="category-buttons"></div>
-    <div id="loading" class="loading">Cargando mapa...</div>
     <button class="informe-btn" onclick="window.open('URL_DEL_INFORME','_blank')">
       Accede al informe Mapeo de redes y colectivos de Extremadura elaborado por El Ojo Sostenible
     </button>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/mapbox-gl@2.16.1/dist/mapbox-gl.js"></script>
-  <script src="buscador.js" defer></script>
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+  <script src="buscador.js"></script>
 </body>
 </html>
