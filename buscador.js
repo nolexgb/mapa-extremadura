@@ -1,123 +1,139 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoibW1pbGFjIiwiYSI6ImNpeWhkNXZsMDA1ZDgzMm4wdWRzdzRleWcifQ.crLVL3iFWYSbE5zrlkIA7w';
+const COLORS = { SOCIALES: '#FFD700', AMBIENTALES: '#009b4d', ECONOMICAS: '#FF7F00' };
+const LABELS = { SOCIALES: 'SOCIALES', AMBIENTALES: 'AMBIENTALES', ECONOMICAS: 'ECONÓMICAS' };
 
-if (!mapboxgl.supported()) {
-  alert('Tu navegador no soporta Mapbox GL. Por favor, usa una versión más reciente.');
+function norm(s) {
+  return (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
 }
 
-const map = new mapboxgl.Map({
+function catKey(raw) {
+  const v = norm(raw);
+  if (v.includes('SOCIAL')) return 'SOCIALES';
+  if (v.includes('AMBIENT')) return 'AMBIENTALES';
+  if (v.includes('ECONOM')) return 'ECONOMICAS';
+  return null;
+}
+
+const map = new maplibregl.Map({
   container: 'map',
-  style: 'mapbox://styles/mapbox/light-v11',
+  style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
   center: [-6.38, 39.39],
   zoom: 7
 });
 
-const categorias = {
-  SOCIALES: '#FFD700',
-  AMBIENTALES: '#009b4d',
-  ECONÓMICAS: '#FF7F00'
-};
+fetch('entidades.geojson')
+  .then(r => r.json())
+  .then(data => {
+    const features = data.features || [];
+    const counts = { SOCIALES: 0, AMBIENTALES: 0, ECONOMICAS: 0 };
+    const markers = [];
+    const byName = new Map();
 
-const loading = document.createElement('div');
-loading.innerText = 'Cargando mapa...';
-loading.style.position = 'absolute';
-loading.style.top = '50%';
-loading.style.left = '50%';
-loading.style.transform = 'translate(-50%, -50%)';
-loading.style.color = '#009b4d';
-loading.style.fontWeight = 'bold';
-document.body.appendChild(loading);
-
-map.on('load', () => {
-  fetch('entidades.geojson')
-    .then(response => response.json())
-    .then(data => {
-      document.body.removeChild(loading);
-
-      const features = data.features;
-      const categoryCounts = { SOCIALES: 0, AMBIENTALES: 0, ECONÓMICAS: 0 };
-
-      features.forEach(f => {
-        const cat = f.properties.categoria?.trim().toUpperCase();
-        if (categoryCounts[cat] !== undefined) categoryCounts[cat]++;
-      });
-
-      const filtersDiv = document.getElementById('filters');
-      for (const cat in categorias) {
-        const label = document.createElement('label');
-        label.dataset.cat = cat;
-        label.innerHTML = `<input type="checkbox" checked data-cat="${cat}" /> ${cat} (${categoryCounts[cat]})`;
-        filtersDiv.appendChild(label);
-      }
-
-      const markers = [];
-
-      features.forEach(feature => {
-        const props = feature.properties;
-        const categoria = props.categoria?.trim().toUpperCase();
-        const color = categorias[categoria] || '#999';
-
-        const marker = new mapboxgl.Marker({ color })
-          .setLngLat(feature.geometry.coordinates)
-          .addTo(map);
-
-        const popupHTML = `
-          <div>
-            <h3>${props.nombre_entidad}</h3>
-            <p><strong>Categoría:</strong> ${props.categoria}</p>
-            <p><strong>Dirección:</strong> ${props.direccion}</p>
-            <p><strong>Localidad:</strong> ${props.localidad}</p>
-            <p><strong>Sitio web:</strong> <a href="${props.pagina_contacto}" target="_blank">Sitio web</a></p>
-            <p><strong>Temáticas:</strong> ${props.tematica}</p>
-          </div>
-        `;
-
-        const popup = new mapboxgl.Popup({ offset: 25, maxWidth: '320px' }).setHTML(popupHTML);
-
-        marker.getElement().addEventListener('click', () => {
-          popup.addTo(map);
-          map.flyTo({ center: feature.geometry.coordinates, zoom: 11 });
-        });
-
-        markers.push({ marker, categoria, nombre: props.nombre_entidad.toLowerCase() });
-      });
-
-      document.querySelectorAll('#filters input[type=checkbox]').forEach(input => {
-        input.addEventListener('change', () => {
-          const cat = input.dataset.cat;
-          markers.forEach(({ marker, categoria }) => {
-            if (categoria === cat) {
-              input.checked ? marker.addTo(map) : marker.remove();
-            }
-          });
-        });
-      });
-
-      const busqueda = document.getElementById('busqueda');
-      const suggestions = document.getElementById('suggestions');
-
-      busqueda.addEventListener('input', e => {
-        const query = e.target.value.toLowerCase().trim();
-        suggestions.innerHTML = '';
-        if (query.length < 2) return;
-        const resultados = markers.filter(m => m.nombre.includes(query));
-        if (resultados.length > 0) {
-          suggestions.classList.add('show');
-          resultados.forEach(({ marker, nombre }) => {
-            const li = document.createElement('li');
-            li.textContent = nombre;
-            li.addEventListener('click', () => {
-              map.flyTo({ center: marker.getLngLat(), zoom: 12 });
-              suggestions.classList.remove('show');
-            });
-            suggestions.appendChild(li);
-          });
-        } else {
-          suggestions.classList.remove('show');
-        }
-      });
-    })
-    .catch(err => {
-      console.error("Error al cargar entidades.geojson:", err);
-      alert("No se pudo cargar el mapa. Revisa el archivo entidades.geojson o su ruta.");
+    features.forEach(f => {
+      const cat = catKey(f.properties?.categoria);
+      if (cat) counts[cat]++;
     });
-});
+
+    const filtersDiv = document.getElementById('filters');
+    filtersDiv.innerHTML = '';
+    ['SOCIALES', 'AMBIENTALES', 'ECONOMICAS'].forEach(cat => {
+      const label = document.createElement('label');
+      label.dataset.cat = cat;
+      label.innerHTML = `<input type="checkbox" checked data-cat="${cat}" /> ${LABELS[cat]} (${counts[cat] || 0})`;
+      filtersDiv.appendChild(label);
+    });
+    const checkboxes = filtersDiv.querySelectorAll('input[type="checkbox"]');
+
+    const popup = new maplibregl.Popup({ offset: 25, closeButton: true, maxWidth: '360px' });
+
+    features.forEach(f => {
+      const p = f.properties || {};
+      const cat = catKey(p.categoria);
+      const k = cat || 'SOCIALES';
+      const coords = f.geometry?.coordinates;
+      if (!coords) return;
+
+      const el = document.createElement('div');
+      el.className = 'marker';
+      el.style.width = '16px';
+      el.style.height = '16px';
+      el.style.borderRadius = '50%';
+      el.style.backgroundColor = COLORS[k];
+      el.style.border = '2px solid #fff';
+      el.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+      el.style.cursor = 'pointer';
+
+      const html = `
+        <div style="line-height:1.7;max-width:320px">
+          <h3 style="color:#009b4d;font-size:1.2rem;margin:0 0 6px">${p.nombre_entidad || ''}</h3>
+          <p><strong>Categoría:</strong> ${LABELS[k]}</p>
+          <p><strong>Dirección:</strong> ${p.direccion || ''}</p>
+          <p><strong>Localidad:</strong> ${p.localidad || ''}</p>
+          ${p.pagina_contacto ? `<p><strong>Sitio web:</strong> <a href="${p.pagina_contacto}" target="_blank" style="color:#009b4d;text-decoration:underline">SITIO WEB</a></p>` : ''}
+          <p><strong>Temáticas:</strong> ${p.tematica || ''}</p>
+        </div>
+      `;
+
+      const marker = new maplibregl.Marker({ element: el }).setLngLat(coords).addTo(map);
+
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        popup.remove();
+        popup.setLngLat(coords).setHTML(html).addTo(map);
+        map.flyTo({ center: coords, zoom: 12, essential: true });
+      });
+
+      markers.push({ el, cat: k });
+      const n = (p.nombre_entidad || '').trim().toLowerCase();
+      if (n) byName.set(n, { coords, html });
+    });
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const active = new Set([...checkboxes].filter(x => x.checked).map(x => x.dataset.cat));
+        markers.forEach(m => { m.el.style.display = active.has(m.cat) ? 'block' : 'none'; });
+      });
+    });
+
+    const input = document.getElementById('busqueda');
+    const list = document.getElementById('suggestions');
+
+    function showSuggestions(q) {
+      list.innerHTML = '';
+      const ql = (q || '').toLowerCase().trim();
+      if (!ql) { list.classList.remove('show'); return; }
+      const results = [...byName.keys()].filter(n => n.includes(ql)).slice(0, 10);
+      if (!results.length) { list.classList.remove('show'); return; }
+      results.forEach(key => {
+        const li = document.createElement('li');
+        li.textContent = key;
+        li.addEventListener('click', () => {
+          input.value = key;
+          list.classList.remove('show');
+          const item = byName.get(key);
+          popup.remove();
+          popup.setLngLat(item.coords).setHTML(item.html).addTo(map);
+          map.flyTo({ center: item.coords, zoom: 12, essential: true });
+        });
+        list.appendChild(li);
+      });
+      list.classList.add('show');
+    }
+
+    input.addEventListener('input', () => showSuggestions(input.value));
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const k = input.value.toLowerCase().trim();
+        const item = byName.get(k);
+        if (item) {
+          list.classList.remove('show');
+          popup.remove();
+          popup.setLngLat(item.coords).setHTML(item.html).addTo(map);
+          map.flyTo({ center: item.coords, zoom: 12, essential: true });
+        }
+      }
+    });
+
+    document.addEventListener('click', e => {
+      if (!document.querySelector('.search-box-header')?.contains(e.target)) list.classList.remove('show');
+    });
+  });
