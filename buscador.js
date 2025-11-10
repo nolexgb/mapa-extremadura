@@ -25,13 +25,13 @@ fetch('entidades.geojson')
     const markers = [];
     const byName = new Map();
 
-    // Contar entidades por categoría
+    // --- Normaliza y cuenta ---
     features.forEach(f => {
-      const cat = f.properties.categoria?.toUpperCase();
+      let cat = (f.properties.categoria || '').toString().trim().toUpperCase();
       if (counts[cat] !== undefined) counts[cat]++;
     });
 
-    // Crear botones de categoría
+    // --- Crea los filtros ---
     const filtersDiv = document.getElementById('filters');
     Object.keys(categorias).forEach(cat => {
       const label = document.createElement('label');
@@ -39,16 +39,22 @@ fetch('entidades.geojson')
       label.innerHTML = `<input type="checkbox" checked data-cat="${cat}" /> ${cat} (${counts[cat] || 0})`;
       filtersDiv.appendChild(label);
     });
-
     const checkboxes = filtersDiv.querySelectorAll('input[type="checkbox"]');
 
-    // Crear marcadores y popups
+    // --- Popup global (solo uno, reutilizable) ---
+    const popup = new maplibregl.Popup({
+      offset: 25,
+      anchor: 'top',
+      closeButton: true,
+      maxWidth: '360px'
+    });
+
+    // --- Crea marcadores ---
     features.forEach(f => {
       const p = f.properties || {};
-      const cat = p.categoria?.toUpperCase();
+      const cat = (p.categoria || '').toString().trim().toUpperCase();
       const color = categorias[cat] || '#666';
       const coords = f.geometry?.coordinates;
-
       if (!coords || coords.length !== 2) return;
 
       const el = document.createElement('div');
@@ -71,44 +77,44 @@ fetch('entidades.geojson')
         <p><strong>Temáticas:</strong> ${p.tematica || ''}</p>
       `;
 
-      const popup = new maplibregl.Popup({
-        offset: 25,
-        anchor: 'top',
-        closeButton: true,
-        maxWidth: '360px'
-      }).setHTML(popupHTML);
-
       const marker = new maplibregl.Marker({ element: el })
         .setLngLat(coords)
         .addTo(map);
 
       el.addEventListener('click', () => {
+        popup.setLngLat(coords).setHTML(popupHTML).addTo(map);
         map.flyTo({ center: coords, zoom: 12, essential: true });
-        popup.addTo(map);
       });
 
-      markers.push({ marker, el, cat });
+      markers.push({ el, cat, coords, popupHTML });
 
-      // Guardar en índice de búsqueda
       const name = (p.nombre_entidad || '').trim().toLowerCase();
-      if (name) byName.set(name, { coords, open: () => {
-        map.flyTo({ center: coords, zoom: 12, essential: true });
-        popup.addTo(map);
-      }});
+      if (name) {
+        byName.set(name, {
+          coords,
+          popupHTML,
+          open: () => {
+            popup.setLngLat(coords).setHTML(popupHTML).addTo(map);
+            map.flyTo({ center: coords, zoom: 12, essential: true });
+          }
+        });
+      }
     });
 
-    // Filtrado por categoría
-    checkboxes.forEach(cb => cb.addEventListener('change', () => {
-      const active = new Set(
-        [...checkboxes].filter(x => x.checked).map(x => x.dataset.cat)
-      );
-      markers.forEach(m => {
-        const visible = active.has(m.cat);
-        m.el.style.display = visible ? 'block' : 'none';
-      });
-    }));
+    // --- Filtro de categorías ---
+    checkboxes.forEach(cb =>
+      cb.addEventListener('change', () => {
+        const active = new Set(
+          [...checkboxes].filter(x => x.checked).map(x => x.dataset.cat)
+        );
+        markers.forEach(m => {
+          const visible = active.has(m.cat);
+          m.el.style.display = visible ? 'block' : 'none';
+        });
+      })
+    );
 
-    // Búsqueda
+    // --- Búsqueda ---
     const input = document.getElementById('busqueda');
     const list = document.getElementById('suggestions');
 
