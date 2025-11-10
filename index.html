@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
 
-  <!-- Mapbox CSS -->
+  <!-- Estilos Mapbox -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css" rel="stylesheet" />
 
-  <!-- CSS personalizado -->
+  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -41,9 +41,15 @@
   </main>
 
   <!-- Mapbox JS -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js" onload="loadMapScript()"></script>
 
-  <!-- Script principal -->
-  <script src="buscador.js"></script>
+  <!-- Script principal (solo se carga tras Mapbox) -->
+  <script>
+    function loadMapScript() {
+      const script = document.createElement('script');
+      script.src = 'buscador.js';
+      document.body.appendChild(script);
+    }
+  </script>
 </body>
 </html>
