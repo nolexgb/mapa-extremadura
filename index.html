@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
 
-  <!-- Mapbox desde CDN (compatible con GitHub Pages) -->
+  <!-- Mapbox GL JS desde CDN seguro -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl.min.css" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl.min.js"></script>
-
-  <!-- Estilos personalizados -->
+  
+  <!-- Tus estilos -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -43,7 +42,10 @@
     </button>
   </main>
 
-  <script src="buscador.js"></script>
+  <!-- Cargar Mapbox primero -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl.min.js"></script>
+  
+  <!-- Cargar tu script después (con defer) -->
+  <script src="buscador.js" defer></script>
 </body>
 </html>
-
