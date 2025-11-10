@@ -25,11 +25,13 @@ fetch('entidades.geojson')
     const markers = [];
     const byName = new Map();
 
+    // Contar entidades por categoría
     features.forEach(f => {
       const cat = f.properties.categoria?.toUpperCase();
       if (counts[cat] !== undefined) counts[cat]++;
     });
 
+    // Crear botones de categoría
     const filtersDiv = document.getElementById('filters');
     Object.keys(categorias).forEach(cat => {
       const label = document.createElement('label');
@@ -39,21 +41,15 @@ fetch('entidades.geojson')
     });
 
     const checkboxes = filtersDiv.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(cb => cb.addEventListener('change', () => {
-      const active = new Set(
-        [...checkboxes].filter(x => x.checked).map(x => x.dataset.cat)
-      );
-      markers.forEach(m => {
-        const show = active.has(m.cat);
-        m.el.style.display = show ? 'block' : 'none';
-      });
-    }));
 
+    // Crear marcadores y popups
     features.forEach(f => {
       const p = f.properties || {};
       const cat = p.categoria?.toUpperCase();
-      const color = categorias[cat] || '#999';
-      const coords = f.geometry.coordinates;
+      const color = categorias[cat] || '#666';
+      const coords = f.geometry?.coordinates;
+
+      if (!coords || coords.length !== 2) return;
 
       const el = document.createElement('div');
       el.style.width = '14px';
@@ -69,7 +65,9 @@ fetch('entidades.geojson')
         <p><strong>Categoría:</strong> ${p.categoria || ''}</p>
         <p><strong>Dirección:</strong> ${p.direccion || ''}</p>
         <p><strong>Localidad:</strong> ${p.localidad || ''}</p>
-        <p><strong>Sitio web:</strong> ${p.pagina_contacto ? `<a href="${p.pagina_contacto}" target="_blank" rel="noopener">Sitio web</a>` : ''}</p>
+        <p><strong>Sitio web:</strong> ${
+          p.pagina_contacto ? `<a href="${p.pagina_contacto}" target="_blank">Sitio web</a>` : ''
+        }</p>
         <p><strong>Temáticas:</strong> ${p.tematica || ''}</p>
       `;
 
@@ -91,13 +89,26 @@ fetch('entidades.geojson')
 
       markers.push({ marker, el, cat });
 
-      const name = (p.nombre_entidad || '').trim();
-      if (name) byName.set(name.toLowerCase(), { coords, open: () => {
+      // Guardar en índice de búsqueda
+      const name = (p.nombre_entidad || '').trim().toLowerCase();
+      if (name) byName.set(name, { coords, open: () => {
         map.flyTo({ center: coords, zoom: 12, essential: true });
         popup.addTo(map);
       }});
     });
 
+    // Filtrado por categoría
+    checkboxes.forEach(cb => cb.addEventListener('change', () => {
+      const active = new Set(
+        [...checkboxes].filter(x => x.checked).map(x => x.dataset.cat)
+      );
+      markers.forEach(m => {
+        const visible = active.has(m.cat);
+        m.el.style.display = visible ? 'block' : 'none';
+      });
+    }));
+
+    // Búsqueda
     const input = document.getElementById('busqueda');
     const list = document.getElementById('suggestions');
 
@@ -105,9 +116,10 @@ fetch('entidades.geojson')
       list.innerHTML = '';
       if (!q) { list.classList.remove('show'); return; }
       const ql = q.toLowerCase();
-      const items = [...byName.keys()].filter(n => n.includes(ql)).slice(0, 12);
-      if (!items.length) { list.classList.remove('show'); return; }
-      items.forEach(n => {
+      const results = [...byName.keys()].filter(n => n.includes(ql)).slice(0, 10);
+      if (!results.length) { list.classList.remove('show'); return; }
+
+      results.forEach(n => {
         const li = document.createElement('li');
         li.textContent = [...byName.keys()].find(k => k === n);
         li.addEventListener('click', () => {
@@ -129,6 +141,7 @@ fetch('entidades.geojson')
         if (item) { list.classList.remove('show'); item.open(); }
       }
     });
+
     document.addEventListener('click', e => {
       if (!document.querySelector('.search-box-header')?.contains(e.target))
         list.classList.remove('show');
@@ -136,5 +149,5 @@ fetch('entidades.geojson')
   })
   .catch(err => {
     document.getElementById('loader').textContent = 'No se pudo cargar el mapa.';
-    console.error(err);
+    console.error('Error:', err);
   });
