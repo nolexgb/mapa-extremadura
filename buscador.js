@@ -96,4 +96,3 @@ fetch('entidades.geojson')
     });
   })
   .catch(err => console.error('Error al cargar entidades.geojson:', err));
-
