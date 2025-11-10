@@ -4,6 +4,7 @@ const categorias = {
   ECONÓMICAS: '#FF7F00'
 };
 
+// Iniciar el mapa con MapLibre (sin token)
 const map = new maplibregl.Map({
   container: 'map',
   style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
@@ -25,14 +26,16 @@ fetch('entidades.geojson')
     const markers = [];
     const byName = new Map();
 
-    // --- Normaliza y cuenta ---
+    // 🔹 Normaliza y cuenta categorías (acepta "sociales", " Sociales ", etc.)
     features.forEach(f => {
-      let cat = (f.properties.categoria || '').toString().trim().toUpperCase();
+      const rawCat = (f.properties.categoria || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const cat = rawCat.trim().toUpperCase();
       if (counts[cat] !== undefined) counts[cat]++;
     });
 
-    // --- Crea los filtros ---
+    // 🔹 Crea botones de categoría
     const filtersDiv = document.getElementById('filters');
+    filtersDiv.innerHTML = '';
     Object.keys(categorias).forEach(cat => {
       const label = document.createElement('label');
       label.dataset.cat = cat;
@@ -41,19 +44,19 @@ fetch('entidades.geojson')
     });
     const checkboxes = filtersDiv.querySelectorAll('input[type="checkbox"]');
 
-    // --- Popup global (solo uno, reutilizable) ---
+    // 🔹 Popup global reutilizable
     const popup = new maplibregl.Popup({
       offset: 25,
-      anchor: 'top',
       closeButton: true,
       maxWidth: '360px'
     });
 
-    // --- Crea marcadores ---
+    // 🔹 Crea marcadores
     features.forEach(f => {
       const p = f.properties || {};
-      const cat = (p.categoria || '').toString().trim().toUpperCase();
-      const color = categorias[cat] || '#666';
+      const rawCat = (p.categoria || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const cat = rawCat.trim().toUpperCase();
+      const color = categorias[cat] || '#999';
       const coords = f.geometry?.coordinates;
       if (!coords || coords.length !== 2) return;
 
@@ -67,12 +70,12 @@ fetch('entidades.geojson')
       el.style.cursor = 'pointer';
 
       const popupHTML = `
-        <h3>${p.nombre_entidad || ''}</h3>
+        <h3 style="font-size:1.1rem;color:#009b4d;margin-bottom:8px">${p.nombre_entidad || ''}</h3>
         <p><strong>Categoría:</strong> ${p.categoria || ''}</p>
         <p><strong>Dirección:</strong> ${p.direccion || ''}</p>
         <p><strong>Localidad:</strong> ${p.localidad || ''}</p>
         <p><strong>Sitio web:</strong> ${
-          p.pagina_contacto ? `<a href="${p.pagina_contacto}" target="_blank">Sitio web</a>` : ''
+          p.pagina_contacto ? `<a href="${p.pagina_contacto}" target="_blank" rel="noopener">Sitio web</a>` : ''
         }</p>
         <p><strong>Temáticas:</strong> ${p.tematica || ''}</p>
       `;
@@ -88,6 +91,7 @@ fetch('entidades.geojson')
 
       markers.push({ el, cat, coords, popupHTML });
 
+      // 🔹 Índice para búsqueda
       const name = (p.nombre_entidad || '').trim().toLowerCase();
       if (name) {
         byName.set(name, {
@@ -101,20 +105,19 @@ fetch('entidades.geojson')
       }
     });
 
-    // --- Filtro de categorías ---
+    // 🔹 Filtro por categoría
     checkboxes.forEach(cb =>
       cb.addEventListener('change', () => {
         const active = new Set(
           [...checkboxes].filter(x => x.checked).map(x => x.dataset.cat)
         );
         markers.forEach(m => {
-          const visible = active.has(m.cat);
-          m.el.style.display = visible ? 'block' : 'none';
+          m.el.style.display = active.has(m.cat) ? 'block' : 'none';
         });
       })
     );
 
-    // --- Búsqueda ---
+    // 🔹 Búsqueda con sugerencias
     const input = document.getElementById('busqueda');
     const list = document.getElementById('suggestions');
 
