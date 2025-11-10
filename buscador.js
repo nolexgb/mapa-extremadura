@@ -26,7 +26,7 @@ fetch('entidades.geojson')
     const byName = new Map();
 
     features.forEach(f => {
-      const cat = f.properties.CATEGORIA;
+      const cat = f.properties.categoria?.toUpperCase();
       if (counts[cat] !== undefined) counts[cat]++;
     });
 
@@ -51,7 +51,7 @@ fetch('entidades.geojson')
 
     features.forEach(f => {
       const p = f.properties || {};
-      const cat = p.CATEGORIA;
+      const cat = p.categoria?.toUpperCase();
       const color = categorias[cat] || '#999';
       const coords = f.geometry.coordinates;
 
@@ -65,25 +65,37 @@ fetch('entidades.geojson')
       el.style.cursor = 'pointer';
 
       const popupHTML = `
-        <h3>${p.NOMBRE || ''}</h3>
-        <p><strong>Categoría:</strong> ${p.CATEGORIA || ''}</p>
-        <p><strong>Dirección:</strong> ${p.DIRECCION || ''}</p>
-        <p><strong>Localidad:</strong> ${p.LOCALIDAD || ''}</p>
-        <p><strong>Sitio web:</strong> ${p.SITIO_WEB ? `<a href="${p.SITIO_WEB}" target="_blank" rel="noopener">Sitio web</a>` : ''}</p>
-        <p><strong>Temáticas:</strong> ${p.TEMATICAS || ''}</p>
+        <h3>${p.nombre_entidad || ''}</h3>
+        <p><strong>Categoría:</strong> ${p.categoria || ''}</p>
+        <p><strong>Dirección:</strong> ${p.direccion || ''}</p>
+        <p><strong>Localidad:</strong> ${p.localidad || ''}</p>
+        <p><strong>Sitio web:</strong> ${p.pagina_contacto ? `<a href="${p.pagina_contacto}" target="_blank" rel="noopener">Sitio web</a>` : ''}</p>
+        <p><strong>Temáticas:</strong> ${p.tematica || ''}</p>
       `;
 
-      const popup = new maplibregl.Popup({ offset: 25, anchor: 'top', closeButton: true, maxWidth: '360px' }).setHTML(popupHTML);
+      const popup = new maplibregl.Popup({
+        offset: 25,
+        anchor: 'top',
+        closeButton: true,
+        maxWidth: '360px'
+      }).setHTML(popupHTML);
 
-      const marker = new maplibregl.Marker({ element: el }).setLngLat(coords).addTo(map);
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat(coords)
+        .addTo(map);
+
       el.addEventListener('click', () => {
         map.flyTo({ center: coords, zoom: 12, essential: true });
         popup.addTo(map);
       });
 
       markers.push({ marker, el, cat });
-      const name = (p.NOMBRE || '').trim();
-      if (name) byName.set(name.toLowerCase(), { coords, open: () => { map.flyTo({ center: coords, zoom: 12, essential: true }); popup.addTo(map); } });
+
+      const name = (p.nombre_entidad || '').trim();
+      if (name) byName.set(name.toLowerCase(), { coords, open: () => {
+        map.flyTo({ center: coords, zoom: 12, essential: true });
+        popup.addTo(map);
+      }});
     });
 
     const input = document.getElementById('busqueda');
@@ -118,7 +130,8 @@ fetch('entidades.geojson')
       }
     });
     document.addEventListener('click', e => {
-      if (!document.querySelector('.search-box-header')?.contains(e.target)) list.classList.remove('show');
+      if (!document.querySelector('.search-box-header')?.contains(e.target))
+        list.classList.remove('show');
     });
   })
   .catch(err => {
