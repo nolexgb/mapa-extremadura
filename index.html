@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
 
-  <!-- Estilos Mapbox -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css" rel="stylesheet" />
-
-  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -34,22 +31,17 @@
 
   <main class="map-wrap">
     <div id="map"></div>
+
     <div id="filters" class="category-buttons"></div>
+
+    <div id="loading" class="loading">Cargando mapa…</div>
+
     <button class="informe-btn" onclick="window.open('URL_DEL_INFORME','_blank')">
       Accede al informe Mapeo de redes y colectivos de Extremadura elaborado por El Ojo Sostenible
     </button>
   </main>
 
-  <!-- Mapbox JS -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js" onload="loadMapScript()"></script>
-
-  <!-- Script principal (solo se carga tras Mapbox) -->
-  <script>
-    function loadMapScript() {
-      const script = document.createElement('script');
-      script.src = 'buscador.js';
-      document.body.appendChild(script);
-    }
-  </script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js" defer></script>
+  <script src="buscador.js?v=3" defer></script>
 </body>
 </html>
