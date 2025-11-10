@@ -2,97 +2,43 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa de Redes y Colectivos de Extremadura</title>
 
-  <!-- Mapbox GL JS -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css" rel="stylesheet">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
-
-  <style>
-    body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
-    #map { width: 100%; height: 100vh; }
-    .informe-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #009b4d;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 10px 20px;
-      cursor: pointer;
-      font-size: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    .informe-btn:hover { background-color: #007c3c; }
-  </style>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <div id="map"></div>
+  <header class="header">
+    <div class="header-content">
+      <div class="logos">
+        <img src="caceres.png" alt="Diputación de Cáceres" class="logo" />
+        <img src="logo_congdex.jpeg" alt="CONGDEX" class="logo" />
+      </div>
+      <div class="header-text">
+        <h1 class="titulo">Mapa de Redes y Colectivos de Extremadura</h1>
+        <p class="subtitulo">Con el apoyo de la Diputación Provincial de Cáceres</p>
+      </div>
+      <div class="header-right">
+        <a href="https://congdextremadura.org" target="_blank" class="web-link">congdextremadura.org</a>
+        <div class="search-box-header">
+          <input id="busqueda" type="text" placeholder="Buscar entidad" autocomplete="off" />
+          <ul id="suggestions" class="suggestions"></ul>
+        </div>
+      </div>
+    </div>
+  </header>
 
-  <button class="informe-btn"
-    onclick="window.open('https://congdextremadura.org/wp-content/uploads/2025/11/MapeoCONGDEX_07.11.25.pdf','_blank')">
-    Accede al informe Mapeo de redes y colectivos de Extremadura elaborado por El Ojo Sostenible
-  </button>
+  <main class="map-wrap">
+    <div id="map"></div>
+    <div id="filters" class="category-buttons"></div>
 
-  <script>
-    // TOKEN (NO CAMBIAR)
-    mapboxgl.accessToken = 'pk.eyJ1IjoibW1pbGFjIiwiYSI6ImNpeWhkNXZsMDA1ZDgzMm4wdWRzdzRleWcifQ.crLVL3iFWYSbE5zrlkIA7w';
+    <button class="informe-btn" onclick="window.open('https://congdextremadura.org/wp-content/uploads/2025/11/MapeoCONGDEX_07.11.25.pdf','_blank')">
+      Accede al informe Mapeo de redes y colectivos de Extremadura elaborado por El Ojo Sostenible
+    </button>
+  </main>
 
-    // Inicializar mapa
-    const map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [-6.38, 39.39],
-      zoom: 7
-    });
-
-    // Confirmación visual
-    console.log("✅ Mapbox inicializado correctamente");
-
-    // Cargar entidades
-    fetch('entidades.geojson')
-      .then(res => {
-        if (!res.ok) throw new Error("No se pudo cargar entidades.geojson");
-        return res.json();
-      })
-      .then(data => {
-        console.log(📍 ${data.features.length} entidades cargadas);
-
-        const colores = {
-          "SOCIALES": "#FFD700",
-          "AMBIENTALES": "#009b4d",
-          "ECONÓMICAS": "#FF7F00"
-        };
-
-        data.features.forEach(feature => {
-          const props = feature.properties;
-          const categoria = props.categoria?.trim().toUpperCase();
-          const color = colores[categoria] || "#666";
-
-          const marker = new mapboxgl.Marker({ color })
-            .setLngLat(feature.geometry.coordinates)
-            .addTo(map);
-
-          const popup = new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`
-              <h3>${props.nombre_entidad}</h3>
-              <p><b>Categoría:</b> ${props.categoria}</p>
-              <p><b>Dirección:</b> ${props.direccion}</p>
-              <p><b>Localidad:</b> ${props.localidad}</p>
-              <p><b>Temática:</b> ${props.tematica}</p>
-              <p><a href="${props.pagina_contacto}" target="_blank">Sitio web</a></p>
-            `);
-
-          marker.getElement().addEventListener('click', () => popup.addTo(map));
-        });
-      })
-      .catch(err => {
-        console.error("❌ Error:", err);
-        alert("Error al cargar el mapa: verifica que el archivo entidades.geojson está en la misma carpeta del index.html");
-      });
-  </script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
+  <script src="buscador.js"></script>
 </body>
 </html>
